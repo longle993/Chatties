@@ -25,6 +25,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Timer;
 
 public class Fragment_Chats extends Fragment implements IChatViewContract.View {
     FragmentChatsBinding binding;
@@ -41,11 +42,10 @@ public class Fragment_Chats extends Fragment implements IChatViewContract.View {
         manager =getActivity().getSupportFragmentManager();
         listConver = new ArrayList<>();
         presenter = new ChatsFragmentPresenter(this);
-        adapter = new UserAdapter(getActivity(),listConver,user);
         binding.recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        binding.recyclerView.setAdapter(adapter);
 
         LoadData();
+
 
         // Xử lý khi EditTextSearch được chạm vào
         binding.editTextSearch.setOnTouchListener(new View.OnTouchListener() {
@@ -72,7 +72,7 @@ public class Fragment_Chats extends Fragment implements IChatViewContract.View {
     }
 
     @Override
-    public void onFinishLoadChatList(boolean isSuccess, Exception e, Conversation conver) {
+    public void onFinishLoadChatList(boolean isSuccess, Exception e, Conversation conver,int type) {
         if(isSuccess){
             this.listConver.add(conver);
             presenter.onLoadListUser(conver.getUser());
@@ -84,7 +84,8 @@ public class Fragment_Chats extends Fragment implements IChatViewContract.View {
     public void onFinishLoadUserList(boolean isSuccess, Exception e, User user) {
         if(!user.getId().equals(FirebaseAuth.getInstance().getUid())){
             this.user = user;
-            adapter.notifyDataSetChanged();
+            adapter = new UserAdapter(getActivity(),listConver,user);
+            binding.recyclerView.setAdapter(adapter);
             showLoading(false);
         }
     }

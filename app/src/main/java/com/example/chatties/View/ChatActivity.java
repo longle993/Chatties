@@ -78,7 +78,7 @@ public class ChatActivity extends BaseActivity implements ISendMessContract.View
             if(ValidateMessage(message)){
                 Chat newMess = new Chat();
                 String receiverId = getIntent().getExtras().getString(UserTable.USER_ID);
-                String senderId = getIntent().getStringExtra("CurrentID");
+                String senderId = FirebaseAuth.getInstance().getCurrentUser().getUid();
                 Timestamp message_time = Timestamp.now();
                 newMess.setSenderID(senderId);
                 newMess.setMessage(message);

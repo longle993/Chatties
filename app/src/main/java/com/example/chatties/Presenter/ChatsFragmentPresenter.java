@@ -23,9 +23,9 @@ public class ChatsFragmentPresenter implements IChatViewContract.Presenter {
 
     @Override
     public void onLoadChatList() {
-        model.LoadConverForUser((isSuccess, e, conversation) -> {
+        model.LoadConverForUser((isSuccess, e, conversation,type) -> {
             if(isSuccess){
-                view.onFinishLoadChatList(isSuccess,e,conversation);
+                view.onFinishLoadChatList(isSuccess,e,conversation,type);
             }
         });
     }

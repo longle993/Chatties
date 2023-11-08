@@ -2,6 +2,8 @@ package com.example.chatties.Adapter;
 
 import android.app.Activity;
 import android.content.ClipData;
+import android.content.Intent;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,10 +15,16 @@ import com.bumptech.glide.Glide;
 import com.example.chatties.Entity.Chat;
 import com.example.chatties.Entity.Conversation;
 import com.example.chatties.Entity.User;
+import com.example.chatties.Entity.UserTable;
+import com.example.chatties.View.ChatActivity;
 import com.example.chatties.databinding.ItemFragmentChatsBinding;
+import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 
 public class UserAdapter extends RecyclerView.Adapter{
     Activity activity;
@@ -41,9 +49,20 @@ public class UserAdapter extends RecyclerView.Adapter{
         Conversation conver = listConver.get(position);
         Viewholder view = (Viewholder) holder;
         view.binding.lastMessage.setText(conver.getLast_message());
+        String timeMessage = GetDate(conver.getLast_message_time());
+        view.binding.lastTimeMessage.setText(timeMessage);
         view.binding.userNameChats.setText(user.getName());
         Glide.with(activity).load(user.getAvatar()).into(view.binding.avatar);
-
+        view.itemView.setOnClickListener(v -> {
+            Intent intent = new Intent(activity, ChatActivity.class);
+            Bundle sendData = new Bundle();
+            sendData.putString(UserTable.USER_ID,user.getId());
+            sendData.putString(UserTable.USER_AVATAR, user.getAvatar());
+            sendData.putString(UserTable.USER_NAME, user.getName());
+            sendData.putBoolean(UserTable.USER_STATUS,user.isStatus());
+            intent.putExtras(sendData);
+            activity.startActivity(intent);
+        });
     }
 
     @Override
@@ -57,5 +76,24 @@ public class UserAdapter extends RecyclerView.Adapter{
             super(binding.getRoot());
             this.binding = binding;
         }
+    }
+    private String GetDate(Timestamp timeMess) {
+        Date date = timeMess.toDate();
+        Calendar dateMess = Calendar.getInstance();
+        dateMess.setTime(date);
+
+        Calendar today = Calendar.getInstance();
+        SimpleDateFormat formatDate;
+
+        if (dateMess.get(Calendar.YEAR) == today.get(Calendar.YEAR)
+                && dateMess.get(Calendar.MONTH) == today.get(Calendar.MONTH)
+                && dateMess.get(Calendar.DAY_OF_MONTH) == today.get(Calendar.DAY_OF_MONTH)) {
+            formatDate = new SimpleDateFormat("hh:mm a");
+        } else {
+            formatDate = new SimpleDateFormat("dd/MM/yyyy hh:mm a");
+        }
+
+        String timeMessage = formatDate.format(date);
+        return timeMessage;
     }
 }

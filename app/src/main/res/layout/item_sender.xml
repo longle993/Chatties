@@ -3,7 +3,6 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:paddingRight="@dimen/_10sdp"
-    android:layout_marginTop="@dimen/_5sdp"
     android:gravity="right">
     <LinearLayout
         android:id="@+id/sender_shape"
@@ -13,7 +12,6 @@
         android:paddingRight="@dimen/_10sdp"
         android:paddingBottom="@dimen/_5sdp"
         android:paddingTop="@dimen/_5sdp"
-        android:layout_marginTop="@dimen/_5sdp"
         android:layout_marginBottom="@dimen/_5sdp"
         android:background="@drawable/border_message_sender">
         <TextView
@@ -29,7 +27,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_toLeftOf="@id/sender_shape"
-        android:layout_marginTop="@dimen/_12sdp"
+        android:layout_marginTop="@dimen/_7sdp"
         android:layout_marginRight="@dimen/_8sdp"
         android:text="12:00"
         android:textSize="@dimen/_11sdp"

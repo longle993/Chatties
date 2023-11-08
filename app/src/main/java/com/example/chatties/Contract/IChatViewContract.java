@@ -7,7 +7,7 @@ import java.util.ArrayList;
 
 public interface IChatViewContract {
     interface View{
-        void onFinishLoadChatList(boolean isSuccess, Exception e, Conversation conver);
+        void onFinishLoadChatList(boolean isSuccess, Exception e, Conversation conver,int type);
         void onFinishLoadUserList(boolean isSuccess, Exception e, User user);
     }
     interface Presenter{

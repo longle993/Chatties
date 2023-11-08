@@ -14,12 +14,9 @@ public interface IMessageModel {
     void LoadChat(String senderID, String receiverID,onLoadChatListener listener);
     void CreateConversation(String senderID, String receiverID,Chat chat,onCreateConverListener listener);
     void SendMessage(Chat chat, String receiverID, onSendingListener listener);
+    void UpdateConversation(Chat chat);
     interface onLoadConverListener{
-        void onFinish(boolean isSuccess, Exception e, Conversation conversation);
-    }
-    interface onLoadListChat{
-        void onFinish(boolean isSuccess, Exception e, Conversation conversation, ArrayList<User> listUser);
-
+        void onFinish(boolean isSuccess, Exception e, Conversation conversation, int type);
     }
     interface onLoadChatListener{
         void onFinish(boolean isSuccess, Exception e, Chat message);

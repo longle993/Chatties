@@ -40,7 +40,7 @@ public class MessageModel implements IMessageModel{
                                    conversation.setLast_message(document.getString(ConversationTable.CONVERSATION_LASTMESSAGE));
                                    conversation.setLast_message_time(document.getTimestamp(ConversationTable.CONVERSATION_LASTMESSAGETIME));
                                    conversation.setUser(listUser);
-                                   listener.onFinish(true,null,conversation);
+                                   listener.onFinish(true,null,conversation,ConversationTable.CONVERSATION_ADD);
                                }
                            }
                        }}});
@@ -50,34 +50,45 @@ public class MessageModel implements IMessageModel{
     @Override
     public void LoadConverForUser(onLoadConverListener listener) {
         db.collection(ConversationTable.CONVERSATION_TABLENAME)
-                .whereArrayContains(ConversationTable.CONVERSATION_USER,FirebaseAuth.getInstance().getCurrentUser().getUid())
-                .get().addOnCompleteListener(task -> {
-                    if(task.isSuccessful()){
-                        for(QueryDocumentSnapshot dc: task.getResult()){
+                .whereArrayContains(ConversationTable.CONVERSATION_USER, FirebaseAuth.getInstance().getCurrentUser().getUid())
+                .addSnapshotListener((querySnapshot, error) -> {
+                    if (error != null) {
+                        // Xử lý lỗi ở đây
+                        return;
+                    }
+
+                    if (querySnapshot != null) {
+                        for (DocumentChange dc : querySnapshot.getDocumentChanges()) {
                             Conversation conversation = new Conversation();
-                            conversation.setConversationID(dc.getId());
-                            conversation.setLast_message(dc.getString(ConversationTable.CONVERSATION_LASTMESSAGE));
-                            conversation.setLast_message_time(dc.getTimestamp(ConversationTable.CONVERSATION_LASTMESSAGETIME));
-                            conversation.setUser((ArrayList<String>) dc.get(ConversationTable.CONVERSATION_USER));
+                            conversation.setConversationID(dc.getDocument().getId());
+                            conversation.setLast_message(dc.getDocument().getString(ConversationTable.CONVERSATION_LASTMESSAGE));
+                            conversation.setLast_message_time(dc.getDocument().getTimestamp(ConversationTable.CONVERSATION_LASTMESSAGETIME));
+                            conversation.setUser((ArrayList<String>) dc.getDocument().get(ConversationTable.CONVERSATION_USER));
 
                             ArrayList<User> listUser = new ArrayList<>();
-                            for(int i = 0; i< conversation.getUser().size();i++){
-                                userModel.GetUser(conversation.getUser().get(i),((isSuccess, e, user) -> {
+                            for (int i = 0; i < conversation.getUser().size(); i++) {
+                                userModel.GetUser(conversation.getUser().get(i), (isSuccess, e, user) -> {
                                     listUser.add(user);
-                                }));
+                                    // Kiểm tra xem đã lấy đủ dữ liệu User chưa
+                                    if (listUser.size() == conversation.getUser().size()) {
+                                        if(dc.getType() == DocumentChange.Type.MODIFIED){
+                                            listener.onFinish(true, null, conversation,ConversationTable.CONVERSATION_MODIFY); return;
+                                        }
+                                        if(dc.getType() == DocumentChange.Type.ADDED){
+                                            listener.onFinish(true, null, conversation,ConversationTable.CONVERSATION_ADD);
+                                        }
+                                    }
+                                });
                             }
-                            listener.onFinish(true,null,conversation);
                         }
                     }
-                    else {
-                        task.getException().printStackTrace();
-                    }
                 });
+
     }
 
     @Override
     public void LoadChat(String senderID, String receiverID, onLoadChatListener listener) {
-        LoadConversation(senderID, receiverID, (isSuccess, e, conversation) -> {
+        LoadConversation(senderID, receiverID, (isSuccess, e, conversation,type) -> {
             if (isSuccess) {
                 db.collection(ChatTable.CHAT_TABLENAME)
                         .whereEqualTo(ChatTable.CHAT_CONVERSATIONID, conversation.getConversationID())
@@ -130,7 +141,7 @@ public class MessageModel implements IMessageModel{
 
     @Override
     public void SendMessage(Chat chat,String receiverID,onSendingListener listener) {
-        LoadConversation(chat.getSenderID(),receiverID,((isSuccess, e, conversation) -> {
+        LoadConversation(chat.getSenderID(),receiverID,((isSuccess, e, conversation,type) -> {
             if(isSuccess){
                 chat.setConversationID(conversation.getConversationID());
                 db.collection(ChatTable.CHAT_TABLENAME).add(chat).addOnCompleteListener(task -> {
@@ -138,6 +149,7 @@ public class MessageModel implements IMessageModel{
                         db.collection(ChatTable.CHAT_TABLENAME).document(task.getResult().getId())
                                 .update(ChatTable.CHAT_MESSAGEID,task.getResult().getId());
                         chat.setMessageID(task.getResult().getId());
+                        UpdateConversation(chat);
                         listener.onFinish(true,null,chat);
                     }
                     else{
@@ -162,6 +174,13 @@ public class MessageModel implements IMessageModel{
                 }));
             }
         }));
+    }
+
+    @Override
+    public void UpdateConversation(Chat chat) {
+        db.collection(ConversationTable.CONVERSATION_TABLENAME).document(chat.getConversationID())
+                .update(ConversationTable.CONVERSATION_LASTMESSAGE,chat.getMessage(),
+                        ConversationTable.CONVERSATION_LASTMESSAGETIME,chat.getMessage_time());
     }
 
 }
