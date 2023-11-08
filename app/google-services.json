@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "846611369462",
+    "project_id": "chatties-11aff",
+    "storage_bucket": "chatties-11aff.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:846611369462:android:86ae654f51386e46970bd7",
+        "android_client_info": {
+          "package_name": "com.example.chatties"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDO8iBOXeEd8oU1XaM-76Npqanmv0F6eVc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

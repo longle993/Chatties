@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/_490sdp"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/title_fragment"
+        android:layout_width="@dimen/_280sdp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/_20sdp"
+        android:layout_marginTop="@dimen/_20sdp"
+        android:fontFamily="@font/baloo_bhaijaan"
+        android:text="Đoạn chat"
+        android:textColor="@color/black"
+        android:textSize="@dimen/_25sdp" />
+
+    <EditText
+        android:id="@+id/editText_search"
+        style="@style/Widget.Material3.AutoCompleteTextView.OutlinedBox.Dense"
+        android:layout_width="@dimen/_280sdp"
+        android:layout_height="@dimen/_40sdp"
+        android:layout_gravity="top|center"
+        android:background="@drawable/border_search"
+        android:drawableLeft="@drawable/search"
+        android:drawablePadding="@dimen/_10sdp"
+        android:focusableInTouchMode="false"
+        android:fontFamily="@font/baloo_bhai_2"
+        android:hint="Tìm kiếm"
+        android:paddingStart="@dimen/_20sdp"
+        android:textColor="@color/gray"
+        android:textSize="@dimen/_12sdp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.553"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.11" />
+
+    <FrameLayout
+        android:id="@+id/frameList"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_300sdp"
+        android:orientation="horizontal"
+        android:layout_weight="1"
+        >
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_360sdp"
+            android:layout_margin="@dimen/_10sdp"
+            android:paddingTop="@dimen/_10sdp"
+            android:visibility="gone"/>
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_gravity="center"
+            android:visibility="visible"
+            android:indeterminateTint="@color/pink_btn"
+            />
+    </FrameLayout>
+
+</LinearLayout>

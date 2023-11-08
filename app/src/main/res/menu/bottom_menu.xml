@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/nav_chats"
+        android:title="Đoạn chat"
+        android:icon="@drawable/chats" />
+    <item
+        android:id="@+id/nav_contact"
+        android:title="Danh bạ"
+        android:icon="@drawable/contact" />
+    <item
+        android:id="@+id/nav_setting"
+        android:title="Cài đặt"
+        android:icon="@drawable/setting"/>
+</menu>

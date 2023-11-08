@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/_490sdp"
+    android:orientation="vertical">
+    <TextView
+        android:layout_width="@dimen/_280sdp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/_20sdp"
+        android:layout_marginTop="@dimen/_20sdp"
+        android:fontFamily="@font/baloo_bhaijaan"
+        android:text="Danh bạ"
+        android:textColor="@color/black"
+        android:textSize="@dimen/_25sdp"
+        />
+    <EditText
+        android:id="@+id/editText_search"
+        style="@style/Widget.Material3.AutoCompleteTextView.OutlinedBox.Dense"
+        android:layout_width="@dimen/_280sdp"
+        android:layout_height="@dimen/_40sdp"
+        android:background="@drawable/border_search"
+        android:drawableLeft="@drawable/search"
+        android:drawablePadding="@dimen/_10sdp"
+        android:fontFamily="@font/baloo_bhai_2"
+        android:hint="Tìm kiếm"
+        android:layout_gravity="top|center"
+        android:paddingStart="@dimen/_20sdp"
+        android:textColor="@color/gray"
+        android:textSize="@dimen/_12sdp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.553"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.11" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/_15sdp"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btn_addfr"
+            android:layout_width="@dimen/_35sdp"
+            android:layout_height="@dimen/_40sdp"
+            android:backgroundTint="@color/pink_btn"
+            app:cornerRadius="@dimen/_10sdp"
+            android:paddingTop="@dimen/_10sdp"
+            android:drawableTop="@drawable/user_add"
+            android:layout_marginRight="@dimen/_15sdp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:fontFamily="@font/baloo_bhai_2_medium"
+            android:text="Lời mời kết bạn"
+            android:textColor="@color/text_colordark"
+            android:textSize="@dimen/_14sdp"/>
+    </LinearLayout>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Đang hoạt động (5)"
+        android:textSize="@dimen/_14sdp"
+        android:textColor="@color/gray_icon"
+        android:fontFamily="@font/baloo_bhai_2_medium"
+        android:layout_marginLeft="@dimen/_15sdp"/>
+    <FrameLayout
+        android:id="@+id/frameList"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_280sdp"
+        android:layout_margin="@dimen/_13sdp"
+        android:visibility="gone">
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/listFriends"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.589"
+            />
+    </FrameLayout>
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_280sdp"
+        >
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_gravity="center"
+            android:visibility="visible"
+            android:indeterminateTint="@color/pink_btn"
+            />
+    </FrameLayout>
+</LinearLayout>
