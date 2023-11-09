@@ -27,23 +27,38 @@ public class MessageModel implements IMessageModel{
     }
     @Override
     public void LoadConversation(String senderID, String receiverID, onLoadConverListener listener) {
-        db.collection(ConversationTable.CONVERSATION_TABLENAME)
-                .whereArrayContains(ConversationTable.CONVERSATION_USER, FirebaseAuth.getInstance().getCurrentUser().getUid())
-                .get().addOnCompleteListener(task -> {
-                   if(task.isSuccessful()){
-                       for(QueryDocumentSnapshot document : task.getResult()) {
-                           ArrayList<String> listUser = (ArrayList<String>) document.get(ConversationTable.CONVERSATION_USER);
-                           for (int i = 0; i < listUser.size(); i++) {
-                               if (receiverID.equals(listUser.get(i))) {
-                                   Conversation conversation = new Conversation();
-                                   conversation.setConversationID(document.getId());
-                                   conversation.setLast_message(document.getString(ConversationTable.CONVERSATION_LASTMESSAGE));
-                                   conversation.setLast_message_time(document.getTimestamp(ConversationTable.CONVERSATION_LASTMESSAGETIME));
-                                   conversation.setUser(listUser);
-                                   listener.onFinish(true,null,conversation,ConversationTable.CONVERSATION_ADD);
-                               }
-                           }
-                       }}});
+            db.collection(ConversationTable.CONVERSATION_TABLENAME)
+                    .whereArrayContains(ConversationTable.CONVERSATION_USER, FirebaseAuth.getInstance().getCurrentUser().getUid())
+                    .get()
+                    .addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
+                            if(task.getResult() == null || task.getResult().isEmpty()){
+                                listener.onFinish(false, new Exception("Kết quả truy vấn trống"), null, ConversationTable.CONVERSATION_NULL);
+                                return;
+                            }
+                            if (task.getResult() != null) {
+                                    for (QueryDocumentSnapshot document : task.getResult()) {
+                                        ArrayList<String> listUser = (ArrayList<String>) document.get(ConversationTable.CONVERSATION_USER);
+                                        for (int i = 0; i < listUser.size(); i++) {
+                                            if (receiverID.equals(listUser.get(i))) {
+                                                Conversation conversation = new Conversation();
+                                                conversation.setConversationID(document.getId());
+                                                conversation.setLast_message(document.getString(ConversationTable.CONVERSATION_LASTMESSAGE));
+                                                conversation.setLast_message_time(document.getTimestamp(ConversationTable.CONVERSATION_LASTMESSAGETIME));
+                                                conversation.setUser(listUser);
+                                                listener.onFinish(true, null, conversation, ConversationTable.CONVERSATION_ADD);
+                                            }
+                                        }
+                                    }
+                            }
+                        } else {
+                            // Xử lý lỗi trong quá trình thực hiện truy vấn
+                            listener.onFinish(false, task.getException(), null, ConversationTable.CONVERSATION_NULL);
+                        }
+                    });
+
+
+
     }
 
 
@@ -56,7 +71,6 @@ public class MessageModel implements IMessageModel{
                         // Xử lý lỗi ở đây
                         return;
                     }
-
                     if (querySnapshot != null) {
                         for (DocumentChange dc : querySnapshot.getDocumentChanges()) {
                             Conversation conversation = new Conversation();
@@ -95,7 +109,7 @@ public class MessageModel implements IMessageModel{
                         .addSnapshotListener((querySnapshot, error) -> {
                             if (error != null) {
                                 // Xử lý lỗi ở đây
-                                listener.onFinish(false, error, null);
+                                listener.onFinish(false, error,null);
                                 return;
                             }
                             if (querySnapshot != null) {
@@ -105,8 +119,9 @@ public class MessageModel implements IMessageModel{
                                     String message = dc.getDocument().getString(ChatTable.CHAT_MESSAGE);
                                     Timestamp messageTime = dc.getDocument().getTimestamp(ChatTable.CHAT_MESSTIME);
                                     String id = dc.getDocument().getString(ChatTable.CHAT_SENDERID);
+                                 //   boolean isImage = dc.getDocument().getBoolean(ChatTable.CHAT_ISIMAGE);
 
-                                    Chat chat = new Chat(conversationID, messageID, message, messageTime, id);
+                                    Chat chat = new Chat(conversationID, messageID, message, messageTime, id,false);
                                     if (dc.getType() == DocumentChange.Type.ADDED ) {
                                         listener.onFinish(true, null, chat);
                                     }
@@ -114,12 +129,15 @@ public class MessageModel implements IMessageModel{
                             }
                         });
             }
+            else {
+                listener.onFinish(isSuccess,e,null);
+            }
         });
 
     }
 
     @Override
-    public void CreateConversation(String senderID, String receiverID,Chat chat,onCreateConverListener listener) {
+    public void CreateConversation(String senderID, String receiverID,Chat chat) {
         Conversation conversation = new Conversation();
         conversation.setUser(new ArrayList<>(Arrays.asList(senderID,receiverID)));
         conversation.setLast_message(chat.getMessage());
@@ -131,16 +149,12 @@ public class MessageModel implements IMessageModel{
                         .document(task.getResult().getId())
                         .update(ConversationTable.CONVERSATION_CONVERSATIONID,task.getResult().getId());
                 conversation.setConversationID(task.getResult().getId());
-                listener.onCreate(true,null,conversation);
-            }
-            else {
-                listener.onCreate(false,task.getException(),null);
             }
         });
     }
 
     @Override
-    public void SendMessage(Chat chat,String receiverID,onSendingListener listener) {
+    public void SendMessage(Chat chat,String receiverID ) {
         LoadConversation(chat.getSenderID(),receiverID,((isSuccess, e, conversation,type) -> {
             if(isSuccess){
                 chat.setConversationID(conversation.getConversationID());
@@ -150,30 +164,15 @@ public class MessageModel implements IMessageModel{
                                 .update(ChatTable.CHAT_MESSAGEID,task.getResult().getId());
                         chat.setMessageID(task.getResult().getId());
                         UpdateConversation(chat);
-                        listener.onFinish(true,null,chat);
                     }
-                    else{
-                        listener.onFinish(false,task
-                                .getException(),chat);
-                    }
-
                 });
             }
             else {
-                CreateConversation(chat.getSenderID(),receiverID,chat,((isSuccess1, e1, newConver) -> {
-                    if(isSuccess1){
-                        SendMessage(chat,receiverID,((isSuccess2, e2,chat1) -> {
-                            if(isSuccess){
-                                listener.onFinish(isSuccess2,e2,chat1);
-                            }
-                            else {
-                                listener.onFinish(isSuccess2,e2,chat1);
-                            }
-                        }));
-                    }
-                }));
+                CreateConversation(chat.getSenderID(),receiverID,chat);
+                SendMessage(chat,receiverID);
             }
         }));
+
     }
 
     @Override

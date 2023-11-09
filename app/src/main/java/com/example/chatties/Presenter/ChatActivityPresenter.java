@@ -18,26 +18,20 @@ public class ChatActivityPresenter implements ISendMessContract.Presenter {
 
     @Override
     public void LoadConversation(String senderID, String receiverID) {
-        model.LoadChat(senderID,receiverID,((isSuccess, e, listChat) -> {
+        model.LoadChat(senderID,receiverID,((isSuccess, e, chat) -> {
             if(isSuccess){
-                view.onFinishLoadConversation(isSuccess,null,listChat);
+                view.onFinishLoadConversation(isSuccess,null,chat);
             }
             else {
                 view.onFinishLoadConversation(isSuccess,e,null);
             }
+
         }));
     }
 
     @Override
     public void SendMessage(Chat chat,String receiverID) {
-        model.SendMessage(chat,receiverID,((isSuccess, e,chat1) -> {
-            if(isSuccess){
-                view.onReloadMessage(isSuccess,e,chat1);
-            }
-            else {
-                view.onReloadMessage(isSuccess,e,null);
-            }
-        }));
+        model.SendMessage(chat,receiverID);
     }
 
     @Override

@@ -12,8 +12,8 @@ public interface IMessageModel {
     void LoadConversation(String senderID, String receiverID, onLoadConverListener listener);
     void LoadConverForUser(onLoadConverListener listener);
     void LoadChat(String senderID, String receiverID,onLoadChatListener listener);
-    void CreateConversation(String senderID, String receiverID,Chat chat,onCreateConverListener listener);
-    void SendMessage(Chat chat, String receiverID, onSendingListener listener);
+    void CreateConversation(String senderID, String receiverID,Chat chat);
+    void SendMessage(Chat chat, String receiverID);
     void UpdateConversation(Chat chat);
     interface onLoadConverListener{
         void onFinish(boolean isSuccess, Exception e, Conversation conversation, int type);
@@ -21,12 +21,7 @@ public interface IMessageModel {
     interface onLoadChatListener{
         void onFinish(boolean isSuccess, Exception e, Chat message);
     }
-    interface onCreateConverListener{
-        void onCreate(boolean isSuccess, Exception e, Conversation newConver);
-    }
-    interface onSendingListener{
-        void onFinish(boolean isSuccess, Exception e,Chat newMessage);
-    }
+
 
 }
 

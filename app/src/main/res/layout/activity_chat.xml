@@ -103,7 +103,26 @@
             android:indeterminateTint="@color/pink_btn"
             />
     </FrameLayout>
-
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        >
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/layoutListImage"
+            android:visibility="visible"
+            android:layout_marginTop="@dimen/_7sdp"
+            android:orientation="horizontal">
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerListImage"
+                android:orientation="horizontal"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_100sdp" />
+    </LinearLayout>
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="@dimen/_57sdp"
@@ -159,7 +178,7 @@
         </RelativeLayout>
 
     </LinearLayout>
-
+    </LinearLayout>
 
 
 

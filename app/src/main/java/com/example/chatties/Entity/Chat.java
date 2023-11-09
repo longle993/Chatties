@@ -12,14 +12,17 @@ public class Chat implements Comparable<Chat>{
     String message;
     Timestamp message_time;
     String senderID;
+    boolean isImage;
 
-    public Chat(String conversationID, String messageID, String message, Timestamp message_time, String senderID) {
+    public Chat(String conversationID, String messageID, String message, Timestamp message_time, String senderID, boolean isImage) {
         this.conversationID = conversationID;
         this.messageID = messageID;
         this.message = message;
         this.message_time = message_time;
         this.senderID = senderID;
+        this.isImage = isImage;
     }
+
     public Chat(){}
 
     public String getConversationID() {

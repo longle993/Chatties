@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import com.example.chatties.Adapter.UserAdapter;
 import com.example.chatties.Contract.IChatViewContract;
 import com.example.chatties.Entity.Conversation;
+import com.example.chatties.Entity.ConversationTable;
 import com.example.chatties.Entity.User;
 import com.example.chatties.Presenter.ChatsFragmentPresenter;
 import com.example.chatties.R;
@@ -45,8 +46,6 @@ public class Fragment_Chats extends Fragment implements IChatViewContract.View {
         binding.recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
         LoadData();
-
-
         // Xử lý khi EditTextSearch được chạm vào
         binding.editTextSearch.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -74,7 +73,17 @@ public class Fragment_Chats extends Fragment implements IChatViewContract.View {
     @Override
     public void onFinishLoadChatList(boolean isSuccess, Exception e, Conversation conver,int type) {
         if(isSuccess){
-            this.listConver.add(conver);
+            if(type == ConversationTable.CONVERSATION_MODIFY){
+                for(Conversation converItem : listConver){
+                    if(converItem.getConversationID().equals(conver.getConversationID())){
+                        converItem.setLast_message_time(conver.getLast_message_time());
+                        converItem.setLast_message(conver.getLast_message());
+                        break;
+                    }
+                }
+            }else {
+                this.listConver.add(conver);
+            }
             presenter.onLoadListUser(conver.getUser());
             Collections.sort(listConver);
         }
@@ -86,8 +95,10 @@ public class Fragment_Chats extends Fragment implements IChatViewContract.View {
             this.user = user;
             adapter = new UserAdapter(getActivity(),listConver,user);
             binding.recyclerView.setAdapter(adapter);
-            showLoading(false);
+            adapter.notifyDataSetChanged();
         }
+        showLoading(false);
+
     }
 
     private void LoadData(){

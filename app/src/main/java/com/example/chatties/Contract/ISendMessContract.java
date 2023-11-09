@@ -7,7 +7,6 @@ import java.util.ArrayList;
 public interface ISendMessContract {
     interface View{
         void onFinishLoadConversation(boolean isSuccess , Exception e, Chat message);
-        void onReloadMessage(boolean isSuccess, Exception e, Chat newMessage);
         void ShowStatus(boolean status);
     }
     interface Presenter{
