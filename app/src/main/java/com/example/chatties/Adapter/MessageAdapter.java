@@ -1,14 +1,23 @@
 package com.example.chatties.Adapter;
 
 import android.app.Activity;
+import android.app.Dialog;
+import android.content.Context;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.example.chatties.Entity.Chat;
+import com.example.chatties.R;
+import com.example.chatties.databinding.ItemImageReceiverBinding;
+import com.example.chatties.databinding.ItemImageSenderBinding;
 import com.example.chatties.databinding.ItemReceiverBinding;
 import com.example.chatties.databinding.ItemSenderBinding;
 import com.google.firebase.Timestamp;
@@ -27,6 +36,8 @@ public class MessageAdapter extends RecyclerView.Adapter {
     String id;
     int ITEM_SEND = 0;
     int ITEM_RECEIVE = 1;
+    int ITEM_IMAGE_SEND = 2;
+    int ITEM_IMAGE_RECEIVE = 3;
 
     public MessageAdapter(Activity activity, ArrayList<Chat> listChat, String id) {
         this.activity = activity;
@@ -37,13 +48,16 @@ public class MessageAdapter extends RecyclerView.Adapter {
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        if(viewType == ITEM_SEND){
-            ItemSenderBinding binding =ItemSenderBinding.inflate(LayoutInflater.from(parent.getContext()),parent,false);
-            return  new SenderViewholder(binding);
-        }
-        else {
-            ItemReceiverBinding binding = ItemReceiverBinding.inflate(LayoutInflater.from(parent.getContext()),parent,false);
-            return  new ReceiverViewholder(binding);
+        switch (viewType){
+            case 0:ItemSenderBinding binding =ItemSenderBinding.inflate(LayoutInflater.from(parent.getContext()),parent,false);
+                return  new SenderViewholder(binding);
+            case 1:ItemReceiverBinding bindingReceive = ItemReceiverBinding.inflate(LayoutInflater.from(parent.getContext()),parent,false);
+                return  new ReceiverViewholder(bindingReceive);
+            case 2:ItemImageSenderBinding bindingIMGsend = ItemImageSenderBinding.inflate(LayoutInflater.from(parent.getContext()),parent,false);
+                return new ImageSenderViewholder(bindingIMGsend);
+            case 3:ItemImageReceiverBinding bindingIMGreceive = ItemImageReceiverBinding.inflate(LayoutInflater.from(parent.getContext()),parent,false);
+                return new ImageReceiverViewholder(bindingIMGreceive);
+            default:return null;
         }
 
     }
@@ -64,7 +78,7 @@ public class MessageAdapter extends RecyclerView.Adapter {
                     senderViewholder.binding.tvTimemessageSender.setVisibility(View.GONE);
                 }
             });
-        } else {
+        } else if(holder instanceof ReceiverViewholder) {
             ReceiverViewholder receiverViewholder = (ReceiverViewholder) holder;
             receiverViewholder.binding.tvMessage.setText(chat.getMessage());
             String timeMessage = GetDate(chat.getMessage_time());
@@ -76,6 +90,20 @@ public class MessageAdapter extends RecyclerView.Adapter {
                 } else {
                     receiverViewholder.binding.tvTimemessage.setVisibility(View.GONE);
                 }
+            });
+        }
+        else if(holder instanceof ImageSenderViewholder){
+            ImageSenderViewholder imgSender = (ImageSenderViewholder) holder;
+            Glide.with(activity).load(chat.getMessage()).override(100,150).into(imgSender.binding.imageView);
+            imgSender.itemView.setOnClickListener(v -> {
+                showImageDialog(activity,chat.getMessage());
+            });
+        }
+        else {
+            ImageReceiverViewholder imgReceiver = (ImageReceiverViewholder) holder;
+            Glide.with(activity).load(chat.getMessage()).override(100,150).into(imgReceiver.binding.imageView);
+            imgReceiver.itemView.setOnClickListener(v -> {
+                showImageDialog(activity, chat.getMessage());
             });
         }
 
@@ -90,11 +118,16 @@ public class MessageAdapter extends RecyclerView.Adapter {
     @Override
     public int getItemViewType(int position) {
         Chat chat =listChat.get(position);
-        if (id.equals(chat.getSenderID())){
+        if (id.equals(chat.getSenderID()) && !chat.isImage()){
             return ITEM_SEND;
         }
-        else {
+        else if(!id.equals(chat.getSenderID()) && !chat.isImage()){
             return ITEM_RECEIVE;
+        } else if (id.equals(chat.getSenderID()) && chat.isImage()) {
+            return ITEM_IMAGE_SEND;
+        }
+        else {
+            return ITEM_IMAGE_RECEIVE;
         }
     }
 
@@ -112,6 +145,21 @@ public class MessageAdapter extends RecyclerView.Adapter {
             this.binding = binding;
         }
     }
+    public class ImageSenderViewholder extends RecyclerView.ViewHolder {
+        ItemImageSenderBinding binding;
+        public ImageSenderViewholder(@NonNull ItemImageSenderBinding binding) {
+            super(binding.getRoot());
+            this.binding= binding;
+        }
+    }
+    public class ImageReceiverViewholder extends RecyclerView.ViewHolder {
+        ItemImageReceiverBinding binding;
+        public ImageReceiverViewholder(@NonNull ItemImageReceiverBinding binding) {
+            super(binding.getRoot());
+            this.binding= binding;
+        }
+    }
+
     private String GetDate(Timestamp timeMess) {
         Date date = timeMess.toDate();
         Calendar dateMess = Calendar.getInstance();
@@ -130,5 +178,15 @@ public class MessageAdapter extends RecyclerView.Adapter {
 
         String timeMessage = formatDate.format(date);
         return timeMessage;
+    }
+    // Phương thức để hiển thị hình ảnh ở chế độ xem lớn hơn
+    private void showImageDialog(Context context, String imageURI) {
+        final Dialog dialog = new Dialog(context);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setContentView(R.layout.image_dialog_layout);
+
+        ImageView imageViewDialog = dialog.findViewById(R.id.imageViewDialog);
+        Glide.with(activity).load(imageURI).into(imageViewDialog);
+        dialog.show();
     }
 }

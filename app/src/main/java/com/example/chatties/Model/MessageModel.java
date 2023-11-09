@@ -1,28 +1,36 @@
 package com.example.chatties.Model;
 
+import android.net.Uri;
+
 import com.example.chatties.Entity.Chat;
 import com.example.chatties.Entity.ChatTable;
 import com.example.chatties.Entity.Conversation;
 import com.example.chatties.Entity.ConversationTable;
 import com.example.chatties.Entity.User;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 
 import org.checkerframework.checker.units.qual.C;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.UUID;
 
 public class MessageModel implements IMessageModel{
     FirebaseFirestore db;
+    FirebaseStorage storage;
     UserModel userModel;
 
     public MessageModel(){
         db = FirebaseFirestore.getInstance();
+        storage = FirebaseStorage.getInstance();
         userModel = new UserModel();
     }
     @Override
@@ -119,9 +127,8 @@ public class MessageModel implements IMessageModel{
                                     String message = dc.getDocument().getString(ChatTable.CHAT_MESSAGE);
                                     Timestamp messageTime = dc.getDocument().getTimestamp(ChatTable.CHAT_MESSTIME);
                                     String id = dc.getDocument().getString(ChatTable.CHAT_SENDERID);
-                                 //   boolean isImage = dc.getDocument().getBoolean(ChatTable.CHAT_ISIMAGE);
-
-                                    Chat chat = new Chat(conversationID, messageID, message, messageTime, id,false);
+                                    boolean isImage = dc.getDocument().getBoolean(ChatTable.CHAT_ISIMAGE);
+                                    Chat chat = new Chat(conversationID, messageID, message, messageTime, id,isImage);
                                     if (dc.getType() == DocumentChange.Type.ADDED ) {
                                         listener.onFinish(true, null, chat);
                                     }
@@ -172,14 +179,60 @@ public class MessageModel implements IMessageModel{
                 SendMessage(chat,receiverID);
             }
         }));
+    }
 
+    @Override
+    public void SendImage(ArrayList<Uri> listImage, String receiverID, onUploadImage listener) {
+        LoadConversation(FirebaseAuth.getInstance().getUid(),receiverID,((isSuccess, e, conversation, type) -> {
+            if(isSuccess){
+                for(int i = 0; i<listImage.size();i++){
+                    Chat chat = new Chat();
+                    chat.setConversationID(conversation.getConversationID());
+                    chat.setImage(true);
+                    chat.setSenderID(FirebaseAuth.getInstance().getUid());
+                    chat.setMessage_time(Timestamp.now());
+                    //Put hình ảnh
+                    StorageReference storageReference = storage.getReference().child("Message/"+FirebaseAuth.getInstance().getUid()+"/").child(UUID.randomUUID().toString());
+                    storageReference.putFile(listImage.get(i)).addOnCompleteListener(task -> {
+                       if(task.isSuccessful()){
+                           storageReference.child("Message/"+FirebaseAuth.getInstance().getUid());
+                           storageReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                               @Override
+                               public void onSuccess(Uri uri) {
+                                   String imgURI = uri.toString();
+                                   chat.setMessage(imgURI);
+                                   db.collection(ChatTable.CHAT_TABLENAME).add(chat).addOnCompleteListener(task1 -> {
+                                      if(task1.isSuccessful()){
+                                          chat.setMessageID(task1.getResult().getId());
+                                          db.collection(ChatTable.CHAT_TABLENAME).document(chat.getMessageID())
+                                                  .update(ChatTable.CHAT_MESSAGEID,chat.getMessageID());
+                                          UpdateConversation(chat);
+                                          listener.onFinish(isSuccess,e);
+                                      }
+                                   });
+                               }
+                           });
+                       }
+                    });
+
+                }
+            }
+        }));
     }
 
     @Override
     public void UpdateConversation(Chat chat) {
-        db.collection(ConversationTable.CONVERSATION_TABLENAME).document(chat.getConversationID())
-                .update(ConversationTable.CONVERSATION_LASTMESSAGE,chat.getMessage(),
-                        ConversationTable.CONVERSATION_LASTMESSAGETIME,chat.getMessage_time());
+        if(chat.isImage()){
+            db.collection(ConversationTable.CONVERSATION_TABLENAME).document(chat.getConversationID())
+                    .update(ConversationTable.CONVERSATION_LASTMESSAGE,ChatTable.CHAT_MESSAGEIMAGE,
+                            ConversationTable.CONVERSATION_LASTMESSAGETIME,chat.getMessage_time());
+        }
+        else {
+            db.collection(ConversationTable.CONVERSATION_TABLENAME).document(chat.getConversationID())
+                    .update(ConversationTable.CONVERSATION_LASTMESSAGE,chat.getMessage(),
+                            ConversationTable.CONVERSATION_LASTMESSAGETIME,chat.getMessage_time());
+        }
+
     }
 
 }

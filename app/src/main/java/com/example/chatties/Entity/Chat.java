@@ -65,6 +65,14 @@ public class Chat implements Comparable<Chat>{
         this.senderID = senderID;
     }
 
+    public boolean isImage() {
+        return isImage;
+    }
+
+    public void setImage(boolean image) {
+        isImage = image;
+    }
+
     @Override
     public int compareTo(Chat o) {
         return this.message_time.compareTo(o.message_time);

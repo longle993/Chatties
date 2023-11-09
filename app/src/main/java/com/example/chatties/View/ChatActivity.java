@@ -4,6 +4,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import android.app.Dialog;
 import android.content.ClipData;
 import android.content.Context;
 import android.content.Intent;
@@ -13,7 +14,9 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.view.View;
+import android.view.Window;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
 import com.example.chatties.Adapter.ImageAdapter;
@@ -36,7 +39,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.Locale;
 
-public class ChatActivity extends BaseActivity implements ISendMessContract.View {
+public class ChatActivity extends BaseActivity implements ISendMessContract.View,ImageAdapter.onDeletePic {
     ActivityChatBinding binding;
     ChatActivityPresenter presenter;
     MessageAdapter messAdapter;
@@ -58,6 +61,7 @@ public class ChatActivity extends BaseActivity implements ISendMessContract.View
         presenter = new ChatActivityPresenter(this);
         messAdapter = new MessageAdapter(this,this.listChat, auth.getUid());
         imgAdapter = new ImageAdapter(this,selectedImagePaths);
+        imgAdapter.setOnDeletePic(this);
         binding.recyclerViewMessage.setLayoutManager(new LinearLayoutManager(this));
         binding.recyclerViewMessage.setAdapter(messAdapter);
 
@@ -86,17 +90,20 @@ public class ChatActivity extends BaseActivity implements ISendMessContract.View
         });
         binding.btnSendMessage.setOnClickListener(v -> {
             String message = binding.edtSendMessage.getText().toString();
+            String receiverId = getIntent().getExtras().getString(UserTable.USER_ID);
+            String senderId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+            Timestamp message_time = Timestamp.now();
             if(ValidateMessage(message)){
                 Chat newMess = new Chat();
-                String receiverId = getIntent().getExtras().getString(UserTable.USER_ID);
-                String senderId = FirebaseAuth.getInstance().getCurrentUser().getUid();
-                Timestamp message_time = Timestamp.now();
                 newMess.setSenderID(senderId);
                 newMess.setMessage(message);
                 newMess.setMessage_time(message_time);
                 presenter.SendMessage(newMess,receiverId);
                 DisableEDT();
                 binding.edtSendMessage.setText("");
+            }
+            else if (!ValidateMessage(message) && selectedImagePaths.size()>0) {
+                presenter.SendPicture(selectedImagePaths,receiverId);
             }
         });
         binding.btnSendPic.setOnClickListener(v -> {
@@ -157,6 +164,16 @@ public class ChatActivity extends BaseActivity implements ISendMessContract.View
     }
 
     @Override
+    public void onFinishSendPicture(boolean isSuccess, Exception e) {
+        if(isSuccess){
+            selectedImagePaths.clear();
+            imgAdapter.notifyDataSetChanged();
+            binding.btnSendMessage.setVisibility(View.GONE);
+            binding.layoutListImage.setVisibility(View.GONE);
+        }
+    }
+
+    @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if(requestCode==request_code && (resultCode == RESULT_OK || resultCode == RESULT_FIRST_USER)){
@@ -197,6 +214,14 @@ public class ChatActivity extends BaseActivity implements ISendMessContract.View
         //Ẩn bàn phím
         InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(binding.edtSendMessage.getWindowToken(), 0);
+    }
+
+    @Override
+    public void onDelete(int size) {
+        if(size == 0){
+            binding.btnSendMessage.setVisibility(View.GONE);
+            binding.layoutListImage.setVisibility(View.GONE);
+        }
     }
 
 }

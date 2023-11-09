@@ -112,7 +112,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/layoutListImage"
-            android:visibility="visible"
+            android:visibility="gone"
             android:layout_marginTop="@dimen/_7sdp"
             android:orientation="horizontal">
             <androidx.recyclerview.widget.RecyclerView

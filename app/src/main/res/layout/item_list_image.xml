@@ -1,24 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_marginStart="@dimen/_5sdp"
     android:layout_marginEnd="@dimen/_5sdp"
-    android:layout_width="@dimen/_65sdp"
-    android:layout_height="@dimen/_90sdp"
-    android:background="@drawable/border_sendmess">
+    android:layout_width="@dimen/_75sdp"
+    android:layout_height="@dimen/_90sdp">
 
+    <androidx.cardview.widget.CardView
+        android:layout_width="@dimen/_65sdp"
+        android:layout_height="@dimen/_90sdp"
+        app:cardCornerRadius="@dimen/_8sdp">
         <ImageView
             android:id="@+id/imageView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginTop="@dimen/_8sdp"
-            android:layout_marginBottom="@dimen/_8sdp"/>
-    <ImageView
-        android:id="@+id/btn_removePic"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/icon_delete"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentRight="true"/>
+            android:scaleType="centerCrop"/>
+        <ImageView
+            android:id="@+id/btn_removePic"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/icon_delete"
+            android:layout_gravity="right"/>
+    </androidx.cardview.widget.CardView>
+
+
 
 
     </RelativeLayout>

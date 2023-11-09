@@ -1,9 +1,13 @@
 package com.example.chatties.Presenter;
 
+import android.net.Uri;
+
 import com.example.chatties.Contract.ISendMessContract;
 import com.example.chatties.Entity.Chat;
 import com.example.chatties.Model.MessageModel;
 import com.example.chatties.Model.UserModel;
+
+import java.util.ArrayList;
 
 public class ChatActivityPresenter implements ISendMessContract.Presenter {
     MessageModel model;
@@ -32,6 +36,13 @@ public class ChatActivityPresenter implements ISendMessContract.Presenter {
     @Override
     public void SendMessage(Chat chat,String receiverID) {
         model.SendMessage(chat,receiverID);
+    }
+
+    @Override
+    public void SendPicture(ArrayList<Uri> listImage, String receiverID) {
+        model.SendImage(listImage, receiverID,((isSuccess, e) -> {
+            view.onFinishSendPicture(isSuccess,e);
+        }));
     }
 
     @Override

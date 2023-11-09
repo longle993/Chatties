@@ -18,6 +18,12 @@ import java.util.ArrayList;
 public class ImageAdapter extends RecyclerView.Adapter {
     Activity activity;
     ArrayList<Uri> listImage;
+    private onDeletePic listener;
+
+    public void setOnDeletePic(onDeletePic listener){
+        this.listener = listener;
+    }
+
     public ImageAdapter(Activity activity, ArrayList<Uri> listImage) {
         this.activity = activity;
         this.listImage = listImage;
@@ -38,6 +44,8 @@ public class ImageAdapter extends RecyclerView.Adapter {
         view.binding.btnRemovePic.setOnClickListener(v -> {
             listImage.remove(position);
             notifyDataSetChanged();
+            listener.onDelete(listImage.size());
+
         });
     }
 
@@ -52,5 +60,9 @@ public class ImageAdapter extends RecyclerView.Adapter {
             super(binding.getRoot());
             this.binding = binding;
         }
+    }
+
+    public interface onDeletePic{
+        void onDelete(int size);
     }
 }
