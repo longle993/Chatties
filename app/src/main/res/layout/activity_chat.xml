@@ -24,38 +24,46 @@
             android:backgroundTint="@color/white"
             android:drawableTop="@drawable/back" />
 
-        <de.hdodenhof.circleimageview.CircleImageView
-            android:id="@+id/imv_avatar"
-            android:layout_width="@dimen/_35sdp"
-            android:layout_height="@dimen/_35sdp"
-            android:layout_marginLeft="@dimen/_10sdp"
-            android:layout_marginTop="@dimen/_5sdp"
-            android:layout_toRightOf="@id/btn_backMain" />
-
-        <RelativeLayout
+        <LinearLayout
+            android:id="@+id/layoutUser"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/_8sdp"
-            android:layout_marginTop="@dimen/_3sdp"
-            android:layout_toRightOf="@id/imv_avatar">
+            android:layout_marginLeft="@dimen/_10sdp"
+            android:layout_marginTop="@dimen/_5sdp"
+            android:layout_toRightOf="@id/btn_backMain"
+            >
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/imv_avatar"
+                android:layout_width="@dimen/_35sdp"
+                android:layout_height="@dimen/_35sdp"/>
 
-            <TextView
-                android:id="@+id/tv_username"
+            <RelativeLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/baloo_bhai_2_medium"
-                android:textColor="@color/black"
-                android:textSize="@dimen/_13sdp" />
+                android:layout_marginLeft="@dimen/_8sdp"
+                >
 
-            <TextView
-                android:id="@+id/tv_status"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/tv_username"
-                android:fontFamily="@font/baloo_bhai_2_medium"
-                android:textColor="@color/gray_text97"
-                android:textSize="@dimen/_10sdp" />
-        </RelativeLayout>
+                <TextView
+                    android:id="@+id/tv_username"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/baloo_bhai_2_medium"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/_13sdp" />
+
+                <TextView
+                    android:id="@+id/tv_status"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/tv_username"
+                    android:fontFamily="@font/baloo_bhai_2_medium"
+                    android:textColor="@color/gray_text97"
+                    android:textSize="@dimen/_10sdp" />
+            </RelativeLayout>
+        </LinearLayout>
+
+
+
 
         <Button
             android:id="@+id/btncall"

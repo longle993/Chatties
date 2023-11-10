@@ -13,10 +13,14 @@ import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+
+import org.checkerframework.checker.units.qual.A;
 
 import java.sql.Array;
 import java.util.ArrayList;
@@ -184,6 +188,8 @@ public class UserModel implements IUserModel{
                        user.setName(document.getString(UserTable.USER_NAME));
                        user.setAvatar(document.getString(UserTable.USER_AVATAR));
                        user.setListfriends((ArrayList<String>) document.get(UserTable.USER_FRIENDS));
+                       user.setFriend_request((ArrayList<String>) document.get(UserTable.USER_FRIENDS_REQUEST));
+                       user.setFriend_send_request((ArrayList<String>) document.get(UserTable.USER_FRIEND_SEND_REQUEST));
                        listener.onFinishGet(true,null,user);
                    }
                    else {
@@ -192,5 +198,164 @@ public class UserModel implements IUserModel{
                 });
     }
 
+    @Override
+    public void getRequestFriend(IUserModel.onFinishGetListUserListener listener) {
+        db.collection(UserTable.USER_TABLENAME)
+                .document(auth.getCurrentUser().getUid())
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        ArrayList<String> listRequest = task.getResult().get(UserTable.USER_FRIENDS_REQUEST, ArrayList.class);
 
+                        if (listRequest != null && !listRequest.isEmpty()) {
+                            Query query = db.collection(UserTable.USER_TABLENAME)
+                                    .whereIn(UserTable.USER_ID, listRequest);
+
+                            query.get().addOnCompleteListener(task1 -> {
+                                if (task1.isSuccessful()) {
+                                    ArrayList<User> listUserRequest = new ArrayList<>();
+                                    for (QueryDocumentSnapshot userDoc : task1.getResult()) {
+                                        User user = new User();
+                                        user.setId(userDoc.getString(UserTable.USER_ID));
+                                        user.setAvatar(userDoc.getString(UserTable.USER_AVATAR));
+                                        user.setName(userDoc.getString(UserTable.USER_NAME));
+                                        listUserRequest.add(user); // Thêm user vào danh sách
+                                    }
+                                    listener.onFinishGetRequestFriend(listUserRequest, null);
+                                } else {
+                                    listener.onFinishGetRequestFriend(null, task1.getException());
+                                }
+                            });
+                        } else {
+                            listener.onFinishGetRequestFriend(new ArrayList<>(), null);
+                        }
+                    } else {
+                        listener.onFinishGetRequestFriend(null, task.getException());
+                    }
+                });
+
+    }
+
+    @Override
+    public void getSendRequestFriend(IUserModel.onFinishGetListUserListener listener) {
+        GetUser(auth.getUid(), ((isSuccess, e, user) -> {
+            if(isSuccess){
+                if(user.getFriend_send_request() != null){
+                    db.collection(UserTable.USER_TABLENAME).whereIn(UserTable.USER_ID,user.getFriend_send_request())
+                            .get().addOnCompleteListener(task -> {
+                                if(task.isSuccessful()){
+                                    ArrayList<User> listUserRequest = new ArrayList<>();
+                                    for(QueryDocumentSnapshot document: task.getResult()){
+                                        User request = new User();
+                                        request.setId(document.getString(UserTable.USER_ID));
+                                        request.setAvatar(document.getString(UserTable.USER_AVATAR));
+                                        request.setName(document.getString(UserTable.USER_NAME));
+                                        listUserRequest.add(request);
+                                    }
+                                    listener.onFinishGetRequestFriend(listUserRequest,null);
+                                }
+                                else {
+                                    listener.onFinishGetRequestFriend(new ArrayList<>(), task.getException());
+                                }
+                            });
+                }
+                else {
+                    listener.onFinishGetRequestFriend(new ArrayList<>(), null);
+                }
+
+            }
+            else {
+                listener.onFinishGetRequestFriend(new ArrayList<>(), null);
+            }
+
+        }));
+
+    }
+
+    @Override
+    public void sendRequestFriend(String friendUserID, IUserModel.onFinishSendRequestFriendListener listener) {
+        db.collection(UserTable.USER_TABLENAME).document(auth.getCurrentUser().getUid())
+                .update(UserTable.USER_FRIEND_SEND_REQUEST, FieldValue.arrayUnion(friendUserID)).addOnCompleteListener(
+                        task -> {
+                            if(task.isSuccessful())
+                            {
+                                db.collection(UserTable.USER_TABLENAME).document(friendUserID).update(UserTable.USER_FRIENDS_REQUEST, FieldValue.arrayUnion(auth.getCurrentUser().getUid()))
+                                        .addOnCompleteListener(task1 -> {
+                                            if(task1.isSuccessful())
+                                            {
+                                                listener.onFinishSendRequest(null);
+                                            }
+                                            else
+                                                listener.onFinishSendRequest(task1.getException());
+                                        });
+                            }
+                            else
+                                listener.onFinishSendRequest(task.getException());
+                        }
+                );
+    }
+
+    @Override
+    public void deleteFriend(String friendUserID, IUserModel.onFinishChangeFriendStatusListener listener) {
+        db.collection(UserTable.USER_TABLENAME).document(auth.getCurrentUser().getUid())
+                .update(UserTable.USER_FRIENDS,FieldValue.arrayRemove(friendUserID))
+                .addOnCompleteListener(task -> {
+                    if(task.isSuccessful())
+                    {
+                        db.collection(UserTable.USER_TABLENAME).document(friendUserID)
+                                .update(UserTable.USER_FRIENDS,FieldValue.arrayRemove(auth.getCurrentUser().getUid()))
+                                .addOnCompleteListener( task1 -> {
+                                    if(task1.isSuccessful())
+                                        listener.onFinishChangeFriendStatus(null);
+                                    else
+                                        listener.onFinishChangeFriendStatus(task1.getException());
+                                });
+                    }
+                    else
+                        listener.onFinishChangeFriendStatus(task.getException());
+                });
+
+    }
+
+    @Override
+    public void acceptRequestFriend(String friendUserID, IUserModel.onFinishChangeFriendRequestStatusListener listener) {
+        db.collection(UserTable.USER_TABLENAME).document(auth.getCurrentUser().getUid())
+                .update(UserTable.USER_FRIENDS,FieldValue.arrayUnion(friendUserID))
+                .addOnCompleteListener(task -> {
+                    if(task.isSuccessful())
+                    {
+                        db.collection(UserTable.USER_TABLENAME).document(friendUserID)
+                                .update(UserTable.USER_FRIENDS,FieldValue.arrayUnion(auth.getCurrentUser().getUid()))
+                                .addOnCompleteListener( task1 -> {
+                                    if(task1.isSuccessful())
+                                        listener.onFinishChangeFriendRequest(null);
+                                    else
+                                        listener.onFinishChangeFriendRequest(task1.getException());
+                                });
+                    }
+                    else
+                        listener.onFinishChangeFriendRequest(task.getException());
+                });
+    }
+
+    @Override
+    public void denyRequestFriend(String friendUserID, IUserModel.onFinishChangeFriendStatusListener listener) {
+        db.collection(UserTable.USER_TABLENAME).document(auth.getCurrentUser().getUid())
+                .update(UserTable.USER_FRIENDS_REQUEST,FieldValue.arrayRemove(friendUserID))
+                .addOnCompleteListener(task -> {
+                    if(task.isSuccessful())
+                    {
+                        db.collection(UserTable.USER_TABLENAME).document(friendUserID)
+                                .update(UserTable.USER_FRIEND_SEND_REQUEST, FieldValue.arrayRemove(auth.getCurrentUser().getUid()))
+                                .addOnCompleteListener( task1 -> {
+                                    if(task1.isSuccessful())
+                                        listener.onFinishChangeFriendStatus(null);
+                                    else
+                                        listener.onFinishChangeFriendStatus(task1.getException());
+                                });
+                    }
+                    else
+                        listener.onFinishChangeFriendStatus(task.getException());
+                });
+    }
 }

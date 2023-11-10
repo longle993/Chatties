@@ -12,8 +12,10 @@ public class User {
     String avatar;
     String birthday;
     ArrayList<String> listfriends;
+    ArrayList<String> friend_request;
+    ArrayList<String> friend_send_request;
 
-    public User(String id, String name, String email, String password, boolean status, String lasttimeonl, String avatar, ArrayList<String> listfriends) {
+    public User(String id, String name, String email, String password, boolean status, String lasttimeonl, String avatar, String birthday, ArrayList<String> listfriends, ArrayList<String> friend_request, ArrayList<String> friend_send_request) {
         this.id = id;
         this.name = name;
         this.email = email;
@@ -21,8 +23,12 @@ public class User {
         this.status = status;
         this.lasttimeonl = lasttimeonl;
         this.avatar = avatar;
+        this.birthday = birthday;
         this.listfriends = listfriends;
+        this.friend_request = friend_request;
+        this.friend_send_request = friend_send_request;
     }
+
     public  User(){}
 
     public String getId() {
@@ -95,5 +101,21 @@ public class User {
 
     public void setListfriends(ArrayList<String> listfriends) {
         this.listfriends = listfriends;
+    }
+
+    public ArrayList<String> getFriend_request() {
+        return friend_request;
+    }
+
+    public void setFriend_request(ArrayList<String> friend_request) {
+        this.friend_request = friend_request;
+    }
+
+    public ArrayList<String> getFriend_send_request() {
+        return friend_send_request;
+    }
+
+    public void setFriend_send_request(ArrayList<String> friend_send_request) {
+        this.friend_send_request = friend_send_request;
     }
 }

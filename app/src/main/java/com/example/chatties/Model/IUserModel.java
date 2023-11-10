@@ -13,6 +13,26 @@ public interface IUserModel {
     void GetListFriendID(String id, onGetListFriendsID listener);
     void GetStatus(String id,onSetActiveListener listener);
     void SetStatus(boolean isActive);
+    void getRequestFriend(onFinishGetListUserListener listener);
+    void getSendRequestFriend(onFinishGetListUserListener listener);
+    void sendRequestFriend(String friendUserID, onFinishSendRequestFriendListener listener);
+    void deleteFriend(String friendUserID, onFinishChangeFriendStatusListener listener);
+    void acceptRequestFriend(String friendUserID, onFinishChangeFriendRequestStatusListener listener);
+    void denyRequestFriend(String friendUserID, onFinishChangeFriendStatusListener listener);
+    interface onFinishGetListUserListener{
+        void onFinishGetRequestFriend(ArrayList<User> listUser,Exception e);
+    }
+    interface onFinishSendRequestFriendListener{
+        void onFinishSendRequest(Exception e);
+    }
+    interface onFinishChangeFriendStatusListener{
+        void onFinishChangeFriendStatus(Exception e);
+    }
+
+    interface onFinishChangeFriendRequestStatusListener{
+        void onFinishChangeFriendRequest(Exception e);
+
+    }
     interface onFinishSignout{
         void onFinish(boolean isSuccess, Exception e);
     }

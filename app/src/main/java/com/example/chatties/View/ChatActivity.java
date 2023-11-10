@@ -88,6 +88,12 @@ public class ChatActivity extends BaseActivity implements ISendMessContract.View
                 }
             }
         });
+        binding.layoutUser.setOnClickListener(v -> {
+            Intent intent = new Intent(this, PersonalActivity.class);
+            String receiverId = getIntent().getExtras().getString(UserTable.USER_ID);
+            intent.putExtra(UserTable.USER_ID,receiverId);
+            startActivity(intent);
+        });
         binding.btnSendMessage.setOnClickListener(v -> {
             String message = binding.edtSendMessage.getText().toString();
             String receiverId = getIntent().getExtras().getString(UserTable.USER_ID);

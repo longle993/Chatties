@@ -33,6 +33,7 @@
         app:layout_constraintVertical_bias="0.045" />
 
     <com.google.android.material.tabs.TabLayout
+        android:id="@+id/navRequest"
         android:layout_width="@dimen/_230sdp"
         android:layout_height="@dimen/_35sdp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -45,16 +46,18 @@
         app:tabTextColor="@color/text_colordark"
         app:tabGravity="fill">
 
-        <com.google.android.material.tabs.TabItem
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:text="Đã nhận" />
-
-        <com.google.android.material.tabs.TabItem
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:text="Đã gửi"/>
     </com.google.android.material.tabs.TabLayout>
 
+    <androidx.viewpager.widget.ViewPager
+        android:id="@+id/viewPager_request"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_370sdp"
+        android:layout_weight="1"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.576" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

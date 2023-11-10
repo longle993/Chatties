@@ -65,7 +65,6 @@ public class Fragment_Setting extends Fragment implements ISettingContract.View 
             startActivity(intent);
             getActivity().finish();
         }
-
     }
 
     private void showLoading(boolean loading) {
