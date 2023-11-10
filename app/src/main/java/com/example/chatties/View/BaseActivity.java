@@ -6,6 +6,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.chatties.Contract.IStatusContract;
+import com.example.chatties.Entity.User;
 import com.example.chatties.Presenter.MainActivityPresenter;
 
 public class BaseActivity extends AppCompatActivity implements IStatusContract.View {
@@ -28,5 +29,10 @@ public class BaseActivity extends AppCompatActivity implements IStatusContract.V
     protected void onResume() {
         presenter.SetStatus(true);
         super.onResume();
+    }
+
+    @Override
+    public void LoadUser(User user) {
+
     }
 }

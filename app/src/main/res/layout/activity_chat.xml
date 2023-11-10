@@ -63,18 +63,24 @@
         </LinearLayout>
 
 
-
-
-        <Button
+        <com.zegocloud.uikit.prebuilt.call.invite.widget.ZegoSendCallInvitationButton
             android:id="@+id/btncall"
-            android:layout_width="@dimen/_30sdp"
-            android:layout_height="@dimen/_30sdp"
+            android:layout_width="@dimen/_22sdp"
+            android:layout_height="@dimen/_22sdp"
             android:layout_alignParentRight="true"
-            android:layout_marginTop="@dimen/_5sdp"
-            android:layout_marginRight="@dimen/_25sdp"
-            android:backgroundTint="@color/white"
-            android:drawableTop="@drawable/icon_phone" />
-
+            android:layout_marginTop="@dimen/_10sdp"
+            android:layout_marginRight="@dimen/_50sdp"
+            android:background="@drawable/icon_phone"
+            />
+        <com.zegocloud.uikit.prebuilt.call.invite.widget.ZegoSendCallInvitationButton
+            android:id="@+id/btnVideoCall"
+            android:layout_width="@dimen/_22sdp"
+            android:layout_height="@dimen/_22sdp"
+            android:layout_alignParentRight="true"
+            android:layout_marginTop="@dimen/_10sdp"
+            android:layout_marginRight="@dimen/_20sdp"
+            android:background="@drawable/icon_video"
+            />
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"

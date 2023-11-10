@@ -5,6 +5,8 @@ import android.widget.ArrayAdapter;
 
 import androidx.core.content.ContextCompat;
 
+import com.algolia.search.saas.Client;
+import com.algolia.search.saas.Index;
 import com.example.chatties.Entity.User;
 import com.example.chatties.Entity.UserTable;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -21,6 +23,8 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import org.checkerframework.checker.units.qual.A;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.sql.Array;
 import java.util.ArrayList;
@@ -79,18 +83,35 @@ public class UserModel implements IUserModel{
                                     //Lấy đường dẫn của ảnh
                                     storageReference.child("Avatar/"+id);
                                     storageReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                                                @Override
-                                                public void onSuccess(Uri uri) {
-                                                    String imgURL = uri.toString();
-                                                    user.setAvatar(imgURL);
+                                        @Override
+                                        public void onSuccess(Uri uri) {
+                                            String imgURL = uri.toString();
+                                            user.setAvatar(imgURL);
+                                            Client client = new Client("IPYCJTQFEO", "70efd4755840712c3523b78bb86b5e91");
+                                            Index index = client.getIndex(UserTable.USER_TABLENAME);
+                                            //Gửi dữ liệu lên FireStore
+                                            user.setId(id);
+                                            db.collection(UserTable.USER_TABLENAME)
+                                                    .document(task.getResult().getUser().getUid())
+                                                    .set(user);
 
-                                                    //Gửi dữ liệu lên FireStore
-                                                    user.setId(id);
-                                                    db.collection(UserTable.USER_TABLENAME)
-                                                            .document(task.getResult().getUser().getUid())
-                                                            .set(user);
-                                                }
-                                            });
+                                            try {
+                                                JSONObject object = new JSONObject();
+                                                object.put(UserTable.USER_ID, id);
+                                                object.put(UserTable.USER_NAME, user.getName());
+                                                object.put(UserTable.USER_EMAIL,user.getEmail());
+                                                index.addObjectAsync(object,(jsonObject,e)->{
+                                                    if(e!=null) {
+                                                        Exception e1 = new Exception("Tạo tài khoản thành công");
+                                                        listener.onFinish(true, e1);
+                                                    }
+                                                });
+                                            }
+                                            catch (JSONException ex) {
+                                                ex.printStackTrace();
+                                            }
+                                        }
+                                    });
                                 }
                             });
                         }
@@ -100,11 +121,19 @@ public class UserModel implements IUserModel{
                             db.collection(UserTable.USER_TABLENAME)
                                     .document(task.getResult().getUser().getUid())
                                     .set(user);
+                            Client client = new Client("IPYCJTQFEO", "70efd4755840712c3523b78bb86b5e91");
+                            Index index = client.getIndex(UserTable.USER_TABLENAME);
+                            JSONObject object = new JSONObject();
+                            index.addObjectAsync(object,((jsonObject,e)->{
+                                if(e!=null) {
+                                    Exception e1 = new Exception("Tạo tài khoản thành công");
+                                    listener.onFinish(true, e1);
+                                }
+                            }));
                         }
                         //Trả về thông báo thành công
                         Exception e = new Exception("Tạo tài khoản thành công");
                         listener.onFinish(true,e);
-
                         //Gửi mail xác thực
                         auth.getCurrentUser().sendEmailVerification();
                     }
@@ -120,7 +149,6 @@ public class UserModel implements IUserModel{
                     }
                 });
     }
-
     @Override
     public void ResetPass(String email, SendEmailResetListener listener) {
         auth = FirebaseAuth.getInstance();
@@ -215,7 +243,7 @@ public class UserModel implements IUserModel{
     public void getRequestFriend(IUserModel.onFinishGetListUserListener listener) {
         GetUser(auth.getUid(), ((isSuccess, e, user) -> {
             if(isSuccess){
-                if(user.getFriend_send_request() != null){
+                if(user.getFriend_request() != null){
                     db.collection(UserTable.USER_TABLENAME).whereIn(UserTable.USER_ID,user.getFriend_request())
                             .get().addOnCompleteListener(task -> {
                                 if(task.isSuccessful()){

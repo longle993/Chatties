@@ -58,4 +58,15 @@ dependencies {
 
     //Kết nối Firebase Firestore
     implementation("com.google.firebase:firebase-firestore:24.9.1")
+
+    //ZEGOCLOUD
+    implementation ("com.github.ZEGOCLOUD:zego_uikit_prebuilt_call_android:+")
+    implementation ("com.github.ZEGOCLOUD:zego_uikit_signaling_plugin_android:+")
+
+    //Algolia
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-scalars:2.9.0")
+    implementation("com.algolia:algoliasearch-android:3.27.0") {
+        exclude(group = "com.android.support")
+    }
 }

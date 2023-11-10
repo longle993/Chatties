@@ -4,6 +4,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import android.app.Application;
 import android.app.Dialog;
 import android.content.ClipData;
 import android.content.Context;
@@ -31,6 +32,10 @@ import com.example.chatties.R;
 import com.example.chatties.databinding.ActivityChatBinding;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
+import com.zegocloud.uikit.prebuilt.call.config.ZegoNotificationConfig;
+import com.zegocloud.uikit.prebuilt.call.invite.ZegoUIKitPrebuiltCallInvitationConfig;
+import com.zegocloud.uikit.prebuilt.call.invite.ZegoUIKitPrebuiltCallInvitationService;
+import com.zegocloud.uikit.service.defines.ZegoUIKitUser;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -118,6 +123,20 @@ public class ChatActivity extends BaseActivity implements ISendMessContract.View
             intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE,true);
             startActivityForResult(Intent.createChooser(intent,"Chọn ảnh từ thư viện"),request_code);
         });
+        binding.btncall.setOnClickListener(v -> {
+            String receiverId = getIntent().getExtras().getString(UserTable.USER_ID);
+            voiceCall(receiverId);
+        });
+        binding.btnVideoCall.setOnClickListener(v -> {
+            String receiverId = getIntent().getExtras().getString(UserTable.USER_ID);
+            videoCall(receiverId);
+        });
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        ZegoUIKitPrebuiltCallInvitationService.unInit();
     }
 
     private void GetIntent(){
@@ -228,6 +247,18 @@ public class ChatActivity extends BaseActivity implements ISendMessContract.View
             binding.btnSendMessage.setVisibility(View.GONE);
             binding.layoutListImage.setVisibility(View.GONE);
         }
+    }
+
+    void voiceCall(String callingUser){
+        binding.btncall.setIsVideoCall(false);
+        binding.btncall.setResourceID("zego_uikit_call");
+        binding.btncall.setInvitees(Collections.singletonList(new ZegoUIKitUser(callingUser,callingUser)));
+    }
+
+    void videoCall(String callingUser){
+        binding.btnVideoCall.setIsVideoCall(true);
+        binding.btnVideoCall.setResourceID("zego_uikit_call");
+        binding.btnVideoCall.setInvitees(Collections.singletonList(new ZegoUIKitUser(callingUser,callingUser)));
     }
 
 }

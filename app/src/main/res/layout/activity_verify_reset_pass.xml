@@ -68,7 +68,7 @@
         app:layout_constraintVertical_bias="0.751" />
 
     <TextView
-        android:id="@+id/btnBacktoSignUp"
+        android:id="@+id/btnBacktoReset"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:fontFamily="@font/baloo_bhai_2_semibold"

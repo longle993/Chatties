@@ -1,5 +1,6 @@
 package com.example.chatties.Model;
 
+import android.app.Application;
 import android.net.Uri;
 
 import com.example.chatties.Entity.Chat;
@@ -234,5 +235,7 @@ public class MessageModel implements IMessageModel{
         }
 
     }
+
+
 
 }

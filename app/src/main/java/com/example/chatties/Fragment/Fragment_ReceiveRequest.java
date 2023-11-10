@@ -47,5 +47,9 @@ public class Fragment_ReceiveRequest extends Fragment implements IRequestContrac
             binding.progressBar.setVisibility(View.GONE);
             binding.recyclerReceiveRQ.setVisibility(View.VISIBLE);
         }
+        else {
+            binding.progressBar.setVisibility(View.VISIBLE);
+            binding.recyclerReceiveRQ.setVisibility(View.GONE);
+        }
     }
 }
