@@ -15,6 +15,9 @@
         android:theme="@style/Theme.Chatties"
         tools:targetApi="31">
         <activity
+            android:name=".View.VerifyResetPassActivity"
+            android:exported="false" />
+        <activity
             android:name=".View.PersonalActivity"
             android:exported="false" />
         <activity

@@ -122,6 +122,19 @@ public class UserModel implements IUserModel{
     }
 
     @Override
+    public void ResetPass(String email, SendEmailResetListener listener) {
+        auth = FirebaseAuth.getInstance();
+        auth.sendPasswordResetEmail(email).addOnCompleteListener(task -> {
+           if(task.isSuccessful()) {
+               listener.onFinishSendEmaiReset(true,null);
+           }
+           else {
+               listener.onFinishSendEmaiReset(false,task.getException());
+           }
+        });
+    }
+
+    @Override
     public void GetListFriendID(String id,onGetListFriendsID listener) {
         ArrayList<User> listFriendsID = new ArrayList<>();
         GetUser(id,((isSuccess, e, user) -> {
@@ -200,39 +213,37 @@ public class UserModel implements IUserModel{
 
     @Override
     public void getRequestFriend(IUserModel.onFinishGetListUserListener listener) {
-        db.collection(UserTable.USER_TABLENAME)
-                .document(auth.getCurrentUser().getUid())
-                .get()
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        ArrayList<String> listRequest = task.getResult().get(UserTable.USER_FRIENDS_REQUEST, ArrayList.class);
-
-                        if (listRequest != null && !listRequest.isEmpty()) {
-                            Query query = db.collection(UserTable.USER_TABLENAME)
-                                    .whereIn(UserTable.USER_ID, listRequest);
-
-                            query.get().addOnCompleteListener(task1 -> {
-                                if (task1.isSuccessful()) {
+        GetUser(auth.getUid(), ((isSuccess, e, user) -> {
+            if(isSuccess){
+                if(user.getFriend_send_request() != null){
+                    db.collection(UserTable.USER_TABLENAME).whereIn(UserTable.USER_ID,user.getFriend_request())
+                            .get().addOnCompleteListener(task -> {
+                                if(task.isSuccessful()){
                                     ArrayList<User> listUserRequest = new ArrayList<>();
-                                    for (QueryDocumentSnapshot userDoc : task1.getResult()) {
-                                        User user = new User();
-                                        user.setId(userDoc.getString(UserTable.USER_ID));
-                                        user.setAvatar(userDoc.getString(UserTable.USER_AVATAR));
-                                        user.setName(userDoc.getString(UserTable.USER_NAME));
-                                        listUserRequest.add(user); // Thêm user vào danh sách
+                                    for(QueryDocumentSnapshot document: task.getResult()){
+                                        User request = new User();
+                                        request.setId(document.getString(UserTable.USER_ID));
+                                        request.setAvatar(document.getString(UserTable.USER_AVATAR));
+                                        request.setName(document.getString(UserTable.USER_NAME));
+                                        listUserRequest.add(request);
                                     }
-                                    listener.onFinishGetRequestFriend(listUserRequest, null);
-                                } else {
-                                    listener.onFinishGetRequestFriend(null, task1.getException());
+                                    listener.onFinishGetRequestFriend(listUserRequest,null);
+                                }
+                                else {
+                                    listener.onFinishGetRequestFriend(new ArrayList<>(), task.getException());
                                 }
                             });
-                        } else {
-                            listener.onFinishGetRequestFriend(new ArrayList<>(), null);
-                        }
-                    } else {
-                        listener.onFinishGetRequestFriend(null, task.getException());
-                    }
-                });
+                }
+                else {
+                    listener.onFinishGetRequestFriend(new ArrayList<>(), null);
+                }
+
+            }
+            else {
+                listener.onFinishGetRequestFriend(new ArrayList<>(), null);
+            }
+
+        }));
 
     }
 

@@ -10,6 +10,7 @@ public interface IUserModel {
     void Logout(onFinishSignout listenter);
     void Login(String email, String password, onFinishLoginListener listener);
     void Register(Uri avatar, User user, onFinishRegisterListener listener);
+    void ResetPass(String email, SendEmailResetListener listener);
     void GetListFriendID(String id, onGetListFriendsID listener);
     void GetStatus(String id,onSetActiveListener listener);
     void SetStatus(boolean isActive);
@@ -50,5 +51,8 @@ public interface IUserModel {
     }
     interface onSetActiveListener{
         void onSet(boolean status);
+    }
+    interface SendEmailResetListener{
+        void onFinishSendEmaiReset(boolean isSuccess, Exception e);
     }
 }
