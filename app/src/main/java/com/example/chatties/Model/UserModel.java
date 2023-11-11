@@ -5,8 +5,11 @@ import android.widget.ArrayAdapter;
 
 import androidx.core.content.ContextCompat;
 
+import com.algolia.search.saas.AlgoliaException;
 import com.algolia.search.saas.Client;
+import com.algolia.search.saas.CompletionHandler;
 import com.algolia.search.saas.Index;
+import com.algolia.search.saas.Query;
 import com.example.chatties.Entity.User;
 import com.example.chatties.Entity.UserTable;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -17,12 +20,12 @@ import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import org.checkerframework.checker.units.qual.A;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -35,10 +38,13 @@ public class UserModel implements IUserModel{
     FirebaseStorage storage;
     FirebaseFirestore db;
     FirebaseUser firebaseUser;
+    Client client;
+
     public UserModel(){
         auth = FirebaseAuth.getInstance();
         storage = FirebaseStorage.getInstance();
         db = FirebaseFirestore.getInstance();
+        client = new Client("IPYCJTQFEO", "70efd4755840712c3523b78bb86b5e91");
     }
 
 
@@ -87,7 +93,6 @@ public class UserModel implements IUserModel{
                                         public void onSuccess(Uri uri) {
                                             String imgURL = uri.toString();
                                             user.setAvatar(imgURL);
-                                            Client client = new Client("IPYCJTQFEO", "70efd4755840712c3523b78bb86b5e91");
                                             Index index = client.getIndex(UserTable.USER_TABLENAME);
                                             //Gửi dữ liệu lên FireStore
                                             user.setId(id);
@@ -121,15 +126,22 @@ public class UserModel implements IUserModel{
                             db.collection(UserTable.USER_TABLENAME)
                                     .document(task.getResult().getUser().getUid())
                                     .set(user);
-                            Client client = new Client("IPYCJTQFEO", "70efd4755840712c3523b78bb86b5e91");
                             Index index = client.getIndex(UserTable.USER_TABLENAME);
-                            JSONObject object = new JSONObject();
-                            index.addObjectAsync(object,((jsonObject,e)->{
-                                if(e!=null) {
-                                    Exception e1 = new Exception("Tạo tài khoản thành công");
-                                    listener.onFinish(true, e1);
-                                }
-                            }));
+                            try{
+                                JSONObject object = new JSONObject();
+                                object.put(UserTable.USER_ID, id);
+                                object.put(UserTable.USER_NAME, user.getName());
+                                object.put(UserTable.USER_EMAIL,user.getEmail());
+                                index.addObjectAsync(object,((jsonObject,e)->{
+                                    if(e!=null) {
+                                        Exception e1 = new Exception("Tạo tài khoản thành công");
+                                        listener.onFinish(true, e1);
+                                    }
+                                }));
+                            }
+                            catch (JSONException e){
+                                e.printStackTrace();
+                            }
                         }
                         //Trả về thông báo thành công
                         Exception e = new Exception("Tạo tài khoản thành công");
@@ -240,7 +252,7 @@ public class UserModel implements IUserModel{
     }
 
     @Override
-    public void getRequestFriend(IUserModel.onFinishGetListUserListener listener) {
+    public void getRequestFriend(IUserModel.onFinishGetListUserListener listener) { //Hàm lấy ra các lời mời kết bạn nhận được
         GetUser(auth.getUid(), ((isSuccess, e, user) -> {
             if(isSuccess){
                 if(user.getFriend_request() != null && user.getFriend_request().size()>0){
@@ -299,14 +311,12 @@ public class UserModel implements IUserModel{
                 else {
                     listener.onFinishGetRequestFriend(new ArrayList<>(), null);
                 }
-
             }
             else {
                 listener.onFinishGetRequestFriend(new ArrayList<>(), null);
             }
 
         }));
-
     }
 
     @Override
@@ -352,7 +362,6 @@ public class UserModel implements IUserModel{
                     else
                         listener.onFinishChangeFriendStatus(task.getException());
                 });
-
     }
 
     @Override
@@ -418,5 +427,43 @@ public class UserModel implements IUserModel{
                        listener.onFinishSendRequest(task.getException());
                    }
                 });
+    }
+
+    @Override
+    public void performSearch(String queryText, onGetSearchResult listener) {
+        Index index = client.getIndex(UserTable.USER_TABLENAME);
+        Query query = new Query();
+        query.setQuery(queryText);
+        index.searchAsync(query, new CompletionHandler() {
+            @Override
+            public void requestCompleted(JSONObject jsonObject, AlgoliaException e) {
+                if(e == null){
+                    try{
+                        JSONArray queryResult = jsonObject.getJSONArray("hits");
+                        ArrayList<User> listUser = new ArrayList<>();
+                        for(int i = 0; i< queryResult.length();i++){
+                            JSONObject hitJSON = queryResult.getJSONObject(i);
+                            User user = new User();
+                            user.setId(hitJSON.getString(UserTable.USER_ID));
+                            user.setName(hitJSON.getString(UserTable.USER_NAME));
+                            user.setAvatar(hitJSON.getString(UserTable.USER_AVATAR));
+                            listUser.add(user);
+                        }
+                        if(listUser.size()>0){
+                            listener.onGetResult(true,listUser);
+                        }
+                        else {
+                            listener.onGetResult(false,new ArrayList<>());
+                        }
+                    }
+                    catch (JSONException e1){
+                        e1.printStackTrace();
+                    }
+                }
+                else {
+                    e.printStackTrace();
+                }
+            }
+        });
     }
 }

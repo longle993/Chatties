@@ -1,25 +1,21 @@
 package com.example.chatties.Adapter;
 
 import android.app.Activity;
-import android.content.ClipData;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.example.chatties.Entity.Chat;
 import com.example.chatties.Entity.Conversation;
 import com.example.chatties.Entity.User;
 import com.example.chatties.Entity.UserTable;
-import com.example.chatties.View.ChatActivity;
+import com.example.chatties.View.Activity.ChatActivity;
 import com.example.chatties.databinding.ItemFragmentChatsBinding;
 import com.google.firebase.Timestamp;
-import com.google.firebase.auth.FirebaseAuth;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;

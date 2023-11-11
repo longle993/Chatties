@@ -42,55 +42,99 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.036" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:fontFamily="@font/baloo_bhai_2_medium"
-        android:text="Bạn bè"
-        android:textColor="@color/gray_icon"
-        android:textSize="@dimen/_14sdp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.072"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.166" />
 
-    <androidx.recyclerview.widget.RecyclerView
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="@dimen/_60sdp"
-        android:layout_margin="@dimen/_20sdp"
-        android:orientation="horizontal"
+        android:layout_height="@dimen/_95sdp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.49"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.22" />
+        app:layout_constraintVertical_bias="0.189"
+        android:visibility="gone">
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_gravity="center"
+            android:visibility="visible"
+            android:indeterminateTint="@color/pink_btn"
+            />
+        <LinearLayout
+            android:id="@+id/layoutFriends"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingTop="@dimen/_3sdp"
+            android:visibility="gone"
+            android:orientation="vertical">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/baloo_bhai_2_medium"
+                android:text="Bạn bè"
+                android:textColor="@color/gray_icon"
+                android:textSize="@dimen/_14sdp"
+                android:layout_marginLeft="@dimen/_15sdp"
+                 />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:fontFamily="@font/baloo_bhai_2_medium"
-        android:text="Mọi người"
-        android:textColor="@color/gray_icon"
-        android:textSize="@dimen/_14sdp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.078"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.383" />
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerFriend"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_60sdp"
+                android:layout_marginLeft="@dimen/_15sdp"
+                android:layout_marginRight="@dimen/_20sdp"
+                android:orientation="horizontal"
+                 />
+        </LinearLayout>
+    </FrameLayout>
 
-    <androidx.recyclerview.widget.RecyclerView
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="@dimen/_265sdp"
-        android:layout_margin="@dimen/_20sdp"
-        android:orientation="vertical"
+        android:layout_height="@dimen/_400sdp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.49"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="1.0" />
+        app:layout_constraintVertical_bias="0.717">
+
+        <ProgressBar
+            android:id="@+id/progressBar2"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_gravity="center"
+            android:indeterminateTint="@color/pink_btn"
+            android:visibility="visible" />
+
+        <LinearLayout
+            android:id="@+id/layoutOther"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:paddingTop="@dimen/_3sdp"
+            android:visibility="gone">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/_15sdp"
+                android:fontFamily="@font/baloo_bhai_2_medium"
+                android:text="Mọi người"
+                android:textColor="@color/gray_icon"
+                android:textSize="@dimen/_14sdp" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerOtherUser"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_360sdp"
+                android:layout_marginLeft="@dimen/_15sdp"
+                android:layout_marginRight="@dimen/_20sdp"
+                android:paddingBottom="@dimen/_5sdp"
+                android:orientation="vertical" />
+        </LinearLayout>
+
+
+    </FrameLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

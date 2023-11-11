@@ -29,29 +29,29 @@
             android:name=".View.CallActivity"
             android:exported="false" />
         <activity
-            android:name=".View.VerifyResetPassActivity"
+            android:name=".View.Activity.VerifyResetPassActivity"
             android:exported="false" />
         <activity
-            android:name=".View.PersonalActivity"
+            android:name=".View.Activity.PersonalActivity"
             android:exported="false" />
         <activity
-            android:name=".View.ChatActivity"
+            android:name=".View.Activity.ChatActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".View.VerifyAccountActivity"
+            android:name=".View.Activity.VerifyAccountActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".View.ResetPasswordActivity"
+            android:name=".View.Activity.ResetPasswordActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".View.StartActivity"
+            android:name=".View.Activity.StartActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".View.SplashScreenActivity"
+            android:name=".View.Activity.SplashScreenActivity"
             android:exported="true"
             android:screenOrientation="portrait">
             <intent-filter>
@@ -61,15 +61,15 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".View.SignUpActivity"
+            android:name=".View.Activity.SignUpActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".View.LoginActivity"
+            android:name=".View.Activity.LoginActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".View.MainActivity"
+            android:name=".View.Activity.MainActivity"
             android:exported="true"
             android:screenOrientation="portrait" />
 

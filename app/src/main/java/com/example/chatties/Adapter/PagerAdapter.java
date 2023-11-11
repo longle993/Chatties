@@ -5,8 +5,8 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 
-import com.example.chatties.Fragment.Fragment_ReceiveRequest;
-import com.example.chatties.Fragment.Fragment_SendRequest;
+import com.example.chatties.View.Fragment.Fragment_ReceiveRequest;
+import com.example.chatties.View.Fragment.Fragment_SendRequest;
 
 public class PagerAdapter extends FragmentPagerAdapter {
     public PagerAdapter(FragmentManager fm) {

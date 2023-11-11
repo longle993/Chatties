@@ -232,7 +232,6 @@ public class MessageModel implements IMessageModel{
                     .update(ConversationTable.CONVERSATION_LASTMESSAGE,chat.getMessage(),
                             ConversationTable.CONVERSATION_LASTMESSAGETIME,chat.getMessage_time());
         }
-
     }
 
 

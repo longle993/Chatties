@@ -21,6 +21,8 @@ public interface IUserModel {
     void acceptRequestFriend(String friendUserID, onFinishChangeFriendRequestStatusListener listener);
     void denyRequestFriend(String friendUserID, onFinishChangeFriendStatusListener listener);
     void removeRequestFriend(String friendUserID, onFinishSendRequestFriendListener listener);
+    void performSearch(String queryText, onGetSearchResult listener);
+
     interface onFinishGetListUserListener{
         void onFinishGetRequestFriend(ArrayList<User> listUser,Exception e);
     }
@@ -55,5 +57,8 @@ public interface IUserModel {
     }
     interface SendEmailResetListener{
         void onFinishSendEmaiReset(boolean isSuccess, Exception e);
+    }
+    interface onGetSearchResult{
+        void onGetResult(boolean isSuccess, ArrayList<User> listUser);
     }
 }

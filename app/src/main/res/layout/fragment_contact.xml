@@ -28,6 +28,7 @@
         android:layout_gravity="top|center"
         android:paddingStart="@dimen/_20sdp"
         android:textColor="@color/gray"
+        android:focusableInTouchMode="false"
         android:textSize="@dimen/_12sdp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
