@@ -42,7 +42,8 @@ public class MessageModel implements IMessageModel{
                     .addOnCompleteListener(task -> {
                         if (task.isSuccessful()) {
                             if(task.getResult() == null || task.getResult().isEmpty()){
-                                listener.onFinish(false, new Exception("Kết quả truy vấn trống"), null, ConversationTable.CONVERSATION_NULL);
+                                listener.onFinish(false, new Exception("Kết quả truy vấn trống"), null,
+                                        ConversationTable.CONVERSATION_NULL);
                                 return;
                             }
                             if (task.getResult() != null) {
@@ -76,10 +77,7 @@ public class MessageModel implements IMessageModel{
         db.collection(ConversationTable.CONVERSATION_TABLENAME)
                 .whereArrayContains(ConversationTable.CONVERSATION_USER, FirebaseAuth.getInstance().getCurrentUser().getUid())
                 .addSnapshotListener((querySnapshot, error) -> {
-                    if (error != null) {
-                        // Xử lý lỗi ở đây
-                        return;
-                    }
+                    if (error != null) {return;}
                     if (querySnapshot != null) {
                         for (DocumentChange dc : querySnapshot.getDocumentChanges()) {
                             Conversation conversation = new Conversation();
@@ -87,7 +85,6 @@ public class MessageModel implements IMessageModel{
                             conversation.setLast_message(dc.getDocument().getString(ConversationTable.CONVERSATION_LASTMESSAGE));
                             conversation.setLast_message_time(dc.getDocument().getTimestamp(ConversationTable.CONVERSATION_LASTMESSAGETIME));
                             conversation.setUser((ArrayList<String>) dc.getDocument().get(ConversationTable.CONVERSATION_USER));
-
                             ArrayList<User> listUser = new ArrayList<>();
                             for (int i = 0; i < conversation.getUser().size(); i++) {
                                 userModel.GetUser(conversation.getUser().get(i), (isSuccess, e, user) -> {
@@ -193,7 +190,9 @@ public class MessageModel implements IMessageModel{
                     chat.setSenderID(FirebaseAuth.getInstance().getUid());
                     chat.setMessage_time(Timestamp.now());
                     //Put hình ảnh
-                    StorageReference storageReference = storage.getReference().child("Message/"+FirebaseAuth.getInstance().getUid()+"/").child(UUID.randomUUID().toString());
+                    StorageReference storageReference = storage.getReference()
+                            .child("Message/"+FirebaseAuth.getInstance().getUid()+"/")
+                            .child(UUID.randomUUID().toString());
                     storageReference.putFile(listImage.get(i)).addOnCompleteListener(task -> {
                        if(task.isSuccessful()){
                            storageReference.child("Message/"+FirebaseAuth.getInstance().getUid());

@@ -18,11 +18,12 @@ import com.example.chatties.databinding.FragmentSendrequestBinding;
 
 import java.util.ArrayList;
 
-public class Fragment_SendRequest extends Fragment implements IRequestContract.View {
+public class Fragment_SendRequest extends Fragment implements IRequestContract.View,RequestAdapter.onRemoveRequest {
     FragmentSendrequestBinding binding;
     RequestAdapter adapter;
     ArrayList<User> listUser;
     SendRequestFragmentPresenter presenter;
+    String id;
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -40,10 +41,21 @@ public class Fragment_SendRequest extends Fragment implements IRequestContract.V
             adapter = new RequestAdapter(listUser,getActivity(),0);
             binding.recyclerSendRQ.setLayoutManager(new LinearLayoutManager(getActivity()));
             binding.recyclerSendRQ.setAdapter(adapter);
+            adapter.setOnRemoveRequest(this);
+
         }
         showLoading(false);
 
     }
+
+    @Override
+    public void updateRequest() {
+        listUser.remove(id);
+        adapter = new RequestAdapter(listUser,getActivity(),0);
+        binding.recyclerSendRQ.setLayoutManager(new LinearLayoutManager(getActivity()));
+        binding.recyclerSendRQ.setAdapter(adapter);
+    }
+
     private void showLoading(boolean loading) {
         if (!loading) {
             binding.progressBar.setVisibility(View.GONE);
@@ -53,5 +65,11 @@ public class Fragment_SendRequest extends Fragment implements IRequestContract.V
             binding.progressBar.setVisibility(View.VISIBLE);
             binding.recyclerSendRQ.setVisibility(View.GONE);
         }
+    }
+
+    @Override
+    public void onClickItem(String userID) {
+        presenter.ReplyRequest(userID,false);
+        id = userID;
     }
 }

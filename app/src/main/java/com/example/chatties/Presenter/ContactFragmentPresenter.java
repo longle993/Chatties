@@ -19,7 +19,7 @@ public class ContactFragmentPresenter implements IContactContract.Presenter {
                 view.LoadItemFriend(isSuccess,e,listFriendsID);
             }
             else {
-                view.LoadItemFriend(isSuccess,e,null);
+                view.LoadItemFriend(isSuccess,e,listFriendsID);
             }
         }));
     }

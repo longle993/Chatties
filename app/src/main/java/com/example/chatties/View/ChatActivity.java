@@ -252,7 +252,7 @@ public class ChatActivity extends BaseActivity implements ISendMessContract.View
     void voiceCall(String callingUser){
         binding.btncall.setIsVideoCall(false);
         binding.btncall.setResourceID("zego_uikit_call");
-        binding.btncall.setInvitees(Collections.singletonList(new ZegoUIKitUser(callingUser,callingUser)));
+        binding.btncall.setInvitees(Collections.singletonList(new ZegoUIKitUser(callingUser,"longle")));
     }
 
     void videoCall(String callingUser){

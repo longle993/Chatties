@@ -58,14 +58,14 @@ public class Fragment_Contact extends Fragment implements IContactContract.View 
     @Override
     public void LoadItemFriend(boolean isSuccess, Exception e, ArrayList<User> friendsID) {
         if(isSuccess){
-            String currentID = FirebaseAuth.getInstance().getCurrentUser().getUid();
-            adapter = new ContactAdapter(friendsID,getActivity(),currentID);
-            binding.listFriends.setAdapter(adapter);
-            binding.listFriends.setLayoutManager(new LinearLayoutManager(getActivity()));
+            if(friendsID.size()>0 || friendsID != null){
+                String currentID = FirebaseAuth.getInstance().getCurrentUser().getUid();
+                adapter = new ContactAdapter(friendsID,getActivity(),currentID);
+                binding.listFriends.setAdapter(adapter);
+                binding.listFriends.setLayoutManager(new LinearLayoutManager(getActivity()));
+            }
         }
-
         showLoading(false);
-
     }
     private void LoadUserData(){
         showLoading(true);

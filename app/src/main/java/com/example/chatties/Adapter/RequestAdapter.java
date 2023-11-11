@@ -23,6 +23,10 @@ public class RequestAdapter extends RecyclerView.Adapter {
     int type;
     private static final int SEND_RQ = 0;
     private static final int RECEIVE_RQ = 1;
+    private onRemoveRequest removeRequestListener;
+    private onAcceptOrDenyRequest onAcceptOrDenyRequestListener;
+    public void setOnRemoveRequest(onRemoveRequest listener){this.removeRequestListener = listener;}
+    public void setOnAcceptOrDenyRequestListener(onAcceptOrDenyRequest listener){this.onAcceptOrDenyRequestListener = listener;}
 
     public RequestAdapter(ArrayList<User> listUserRQ, Activity activity, int type) {
         this.listUserRQ = listUserRQ;
@@ -50,11 +54,23 @@ public class RequestAdapter extends RecyclerView.Adapter {
             ViewholerSend view = (ViewholerSend) holder;
             view.binding.userNameChats.setText(user.getName());
             Glide.with(activity).load(user.getAvatar()).into(view.binding.avatar);
+            view.binding.btnRecall.setOnClickListener(v -> {
+                removeRequestListener.onClickItem(user.getId());
+                listUserRQ.remove(user);
+            });
         }
         else {
             ViewholderReceive view = (ViewholderReceive) holder;
             view.binding.userNameChats.setText(user.getName());
             Glide.with(activity).load(user.getAvatar()).into(view.binding.avatar);
+            view.binding.btnAcceptRQ.setOnClickListener(v -> {
+                onAcceptOrDenyRequestListener.onClick(user.getId(), true);
+                listUserRQ.remove(user);
+            });
+            view.binding.btnRefuseRQ.setOnClickListener(v -> {
+                onAcceptOrDenyRequestListener.onClick(user.getId(),false);
+                listUserRQ.remove(user);
+            });
         }
     }
 
@@ -83,5 +99,12 @@ public class RequestAdapter extends RecyclerView.Adapter {
             super(binding.getRoot());
             this.binding = binding;
         }
+    }
+    public interface onRemoveRequest{
+        void onClickItem(String userID);
+    }
+
+    public interface onAcceptOrDenyRequest{
+        void onClick(String userID, boolean isAccept);
     }
 }

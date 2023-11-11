@@ -34,7 +34,7 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:paddingBottom="@dimen/_20sdp"
-            android:visibility="gone">
+            android:visibility="visible">
 
             <de.hdodenhof.circleimageview.CircleImageView
                 android:id="@+id/imv_avatar"
@@ -52,15 +52,7 @@
                 android:textColor="@color/text_colordark"
                 android:textSize="@dimen/_18sdp" />
 
-            <TextView
-                android:id="@+id/btnAdjustAvatar"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:fontFamily="@font/baloo_bhai_2_semibold"
-                android:text="Chỉnh sửa Avatar"
-                android:textColor="@color/pink_btn"
-                android:textSize="@dimen/_15sdp" />
+
 
             <LinearLayout
                 android:layout_width="@dimen/_275sdp"
@@ -116,45 +108,18 @@
 
             </LinearLayout>
 
-            <LinearLayout
-                android:layout_width="@dimen/_275sdp"
-                android:layout_height="@dimen/_50sdp"
-                android:layout_gravity="center"
-                android:layout_marginTop="@dimen/_15sdp"
-                android:background="@drawable/border_inputlayout"
-                android:orientation="horizontal"
-                android:paddingLeft="@dimen/_20sdp">
-
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:src="@drawable/icon_logintextbox" />
-
-                <TextView
-                    android:id="@+id/tv_birthday"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_marginLeft="@dimen/_20sdp"
-                    android:fontFamily="@font/baloo_bhai_2_medium"
-                    android:textColor="@color/text_colordark"
-                    android:textSize="@dimen/_14sdp" />
-
-            </LinearLayout>
-
             <Button
                 android:id="@+id/btnLogout"
                 android:layout_width="@dimen/_275sdp"
                 android:layout_height="@dimen/_50sdp"
                 android:layout_centerInParent="true"
                 android:layout_gravity="center"
-                android:layout_marginTop="@dimen/_30sdp"
-                android:backgroundTint="@color/pink_btn"
+                android:layout_marginTop="@dimen/_40sdp"
+                android:backgroundTint="@color/fill_item_receiver"
                 android:fontFamily="@font/baloo_bhai"
                 android:text="Đăng xuất"
                 android:textSize="@dimen/_16sdp"
-
+android:textColor="@color/text_colordark"
                 />
 
         </LinearLayout>

@@ -48,9 +48,6 @@ public class Fragment_Setting extends Fragment implements ISettingContract.View 
         if(isSuccess){
             binding.tvEmail.setText(user.getEmail());
             binding.tvName.setText(user.getName());
-            if(TextUtils.isEmpty(user.getBirthday())){
-                binding.tvBirthday.setText("Chưa thiết lập");
-            }
             binding.tvNameDisplay.setText(user.getName());
             Glide.with(this).load(user.getAvatar()).into(binding.imvAvatar);
             showLoading(false);

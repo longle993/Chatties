@@ -168,7 +168,7 @@ public class UserModel implements IUserModel{
         GetUser(id,((isSuccess, e, user) -> {
             if (isSuccess){
                 ArrayList<String> listID = user.getListfriends();
-                if(listID !=null){
+                if(listID !=null && listID.size()>0){
                     db.collection(UserTable.USER_TABLENAME).whereIn(UserTable.USER_ID,listID).get().addOnCompleteListener(task -> {
                         for(QueryDocumentSnapshot document: task.getResult()){
                             User getUser = new User();
@@ -181,7 +181,7 @@ public class UserModel implements IUserModel{
                     });
                 }
                 else {
-                    listener.onFinish(false,e,null);
+                    listener.onFinish(false,e,new ArrayList<>());
                 }
             }
 
@@ -243,7 +243,7 @@ public class UserModel implements IUserModel{
     public void getRequestFriend(IUserModel.onFinishGetListUserListener listener) {
         GetUser(auth.getUid(), ((isSuccess, e, user) -> {
             if(isSuccess){
-                if(user.getFriend_request() != null){
+                if(user.getFriend_request() != null && user.getFriend_request().size()>0){
                     db.collection(UserTable.USER_TABLENAME).whereIn(UserTable.USER_ID,user.getFriend_request())
                             .get().addOnCompleteListener(task -> {
                                 if(task.isSuccessful()){
@@ -265,12 +265,10 @@ public class UserModel implements IUserModel{
                 else {
                     listener.onFinishGetRequestFriend(new ArrayList<>(), null);
                 }
-
             }
             else {
                 listener.onFinishGetRequestFriend(new ArrayList<>(), null);
             }
-
         }));
 
     }
@@ -279,7 +277,7 @@ public class UserModel implements IUserModel{
     public void getSendRequestFriend(IUserModel.onFinishGetListUserListener listener) {
         GetUser(auth.getUid(), ((isSuccess, e, user) -> {
             if(isSuccess){
-                if(user.getFriend_send_request() != null){
+                if(user.getFriend_send_request() != null && user.getFriend_send_request().size()>0){
                     db.collection(UserTable.USER_TABLENAME).whereIn(UserTable.USER_ID,user.getFriend_send_request())
                             .get().addOnCompleteListener(task -> {
                                 if(task.isSuccessful()){
@@ -318,7 +316,8 @@ public class UserModel implements IUserModel{
                         task -> {
                             if(task.isSuccessful())
                             {
-                                db.collection(UserTable.USER_TABLENAME).document(friendUserID).update(UserTable.USER_FRIENDS_REQUEST, FieldValue.arrayUnion(auth.getCurrentUser().getUid()))
+                                db.collection(UserTable.USER_TABLENAME).document(friendUserID)
+                                        .update(UserTable.USER_FRIENDS_REQUEST, FieldValue.arrayUnion(auth.getCurrentUser().getUid()))
                                         .addOnCompleteListener(task1 -> {
                                             if(task1.isSuccessful())
                                             {
@@ -395,6 +394,29 @@ public class UserModel implements IUserModel{
                     }
                     else
                         listener.onFinishChangeFriendStatus(task.getException());
+                });
+    }
+
+    @Override
+    public void removeRequestFriend(String friendUserID, onFinishSendRequestFriendListener listener) {
+        db.collection(UserTable.USER_TABLENAME).document(auth.getCurrentUser().getUid())
+                .update(UserTable.USER_FRIEND_SEND_REQUEST,FieldValue.arrayRemove(friendUserID))
+                .addOnCompleteListener(task -> {
+                   if(task.isSuccessful()){
+                       db.collection(UserTable.USER_TABLENAME).document(friendUserID)
+                               .update(UserTable.USER_FRIENDS_REQUEST,FieldValue.arrayRemove(auth.getCurrentUser().getUid()))
+                               .addOnCompleteListener(task1 -> {
+                                  if(task1.isSuccessful()){
+                                      listener.onFinishSendRequest(null);
+                                  }
+                                  else {
+                                      listener.onFinishSendRequest(task1.getException());
+                                  }
+                               });
+                   }
+                   else {
+                       listener.onFinishSendRequest(task.getException());
+                   }
                 });
     }
 }

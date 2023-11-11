@@ -18,4 +18,18 @@ public class ReceiveRequestFragmentPresenter implements IRequestContract.Present
             view.onFinishGetRequest(true,e,listUser);
         });
     }
+
+    @Override
+    public void ReplyRequest(String id,boolean isAccept) {
+        if(isAccept){
+            model.acceptRequestFriend(id,e -> {
+                view.updateRequest();
+            });
+        }
+        else {
+            model.denyRequestFriend(id,e -> {
+                view.updateRequest();
+            });
+        }
+    }
 }

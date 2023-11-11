@@ -20,6 +20,7 @@ public interface IUserModel {
     void deleteFriend(String friendUserID, onFinishChangeFriendStatusListener listener);
     void acceptRequestFriend(String friendUserID, onFinishChangeFriendRequestStatusListener listener);
     void denyRequestFriend(String friendUserID, onFinishChangeFriendStatusListener listener);
+    void removeRequestFriend(String friendUserID, onFinishSendRequestFriendListener listener);
     interface onFinishGetListUserListener{
         void onFinishGetRequestFriend(ArrayList<User> listUser,Exception e);
     }

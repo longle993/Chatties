@@ -18,10 +18,11 @@ import com.example.chatties.databinding.FragmentReceiverequestBinding;
 
 import java.util.ArrayList;
 
-public class Fragment_ReceiveRequest extends Fragment implements IRequestContract.View {
+public class Fragment_ReceiveRequest extends Fragment implements IRequestContract.View,RequestAdapter.onAcceptOrDenyRequest {
     FragmentReceiverequestBinding binding;
     RequestAdapter adapter;
     ArrayList<User> user;
+    String id;
     ReceiveRequestFragmentPresenter presenter;
     @Nullable
     @Override
@@ -39,9 +40,19 @@ public class Fragment_ReceiveRequest extends Fragment implements IRequestContrac
             adapter = new RequestAdapter(user,getActivity(),1);
             binding.recyclerReceiveRQ.setLayoutManager(new LinearLayoutManager(getActivity()));
             binding.recyclerReceiveRQ.setAdapter(adapter);
+            adapter.setOnAcceptOrDenyRequestListener(this);
         }
         showLoading(false);
     }
+
+    @Override
+    public void updateRequest() {
+        user.remove(id);
+        adapter = new RequestAdapter(user,getActivity(),1);
+        binding.recyclerReceiveRQ.setLayoutManager(new LinearLayoutManager(getActivity()));
+        binding.recyclerReceiveRQ.setAdapter(adapter);
+    }
+
     private void showLoading(boolean loading) {
         if (!loading) {
             binding.progressBar.setVisibility(View.GONE);
@@ -51,5 +62,11 @@ public class Fragment_ReceiveRequest extends Fragment implements IRequestContrac
             binding.progressBar.setVisibility(View.VISIBLE);
             binding.recyclerReceiveRQ.setVisibility(View.GONE);
         }
+    }
+
+    @Override
+    public void onClick(String userID, boolean isAccept) {
+        presenter.ReplyRequest(userID,isAccept);
+        id = userID;
     }
 }
