@@ -6,6 +6,7 @@ import java.lang.reflect.Array;
 import java.sql.Time;
 import java.util.ArrayList;
 
+#Chat
 public class Chat implements Comparable<Chat>{
     String conversationID;
     String messageID;
